@@ -3,65 +3,47 @@
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
-        <title>IDE</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>IDE | NSC</title>
     </head>
     <body>
-        <h3>Network Service Chaining</h3>
-        <hr/>
-        <div id="resources">
-            <div class="item" draggable="true"></div>
-            <div class="item" draggable="true"></div>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper light-blue darken-4">
+                    <a href="{% url 'index' %}" class="brand-logo white-text">Network Service Chaining</a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li><a href="#">Configure</a></li>
+                        <li><a href="#">Delete</a></li>
+                        <li><a href="{% url 'index' %}">Restart</a></li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-        <br/>
-        <div id="board">
+        <div class="row">
+            <div class="col s3">
+                <div id="resources" class="card">
+                    <br/>
+                    <h5 class="center-align">Network Service Functions</h5>
+                    <br/>
+                    <img id="firewall" src="{% static 'images/firewall.png' %}" class="item hoverable margin-sm" draggable="true"/>
+                    <img id="loadBalancer" src="{% static 'images/loadbalancer.png' %}" class="item hoverable margin-sm" draggable="true"/>
+                    <img src="{% static 'images/network.png' %}" class="item hoverable margin-sm" draggable="true"/>
+                </div>
+            </div>
+            <div class="col s9">
+                <div id="board" class="card">
+                    <br/>
+                    <h4 class="center-align">Chains Constructor</h4>
+                    <br/>
+                </div>
+            </div>
         </div>
-        <script>
-            var board;
-            var element;
-            window.addEventListener('load', init);
-            function init(){
-                var items = document.getElementsByClassName("item");
-                board = document.getElementById("board");
-
-                board.addEventListener('dragover', dragOver, false);
-                board.addEventListener('dragleave', dragLeave, false);
-                board.addEventListener('drop', dropStart, false);
-
-                for(var i in items){
-                    items[i].addEventListener('dragstart', dragStart, false);
-                    items[i].addEventListener('dragend', dragEnd, false);
-                }
-            }
-
-            function dragStart(e){
-                this.style.backgroundColor = "blue";
-                element = this;
-                var dad = document.createElement("p");
-                var child = this.cloneNode(true);
-                dad.appendChild(child);
-                e.dataTransfer.setData("child", dad.innerHTML);
-            }
-
-            function dragOver(e){
-                e.preventDefault();
-                this.style.backgroundColor = "yellow";
-            }
-
-            function dragLeave(e){
-                this.style.backgroundColor = "green";
-            }
-
-            function dragEnd(e){
-                this.style.backgroundColor = "red";
-            }
-
-            function dropStart(e){
-                e.preventDefault();
-                var data = e.dataTransfer.getData("child");
-                this.innerHTML += data;
-                element.parentNode.removeChild(element);
-            }
-
-        </script>
+        <div class="fixed-action-btn"><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">play_arrow</i></a></div>
+        <script type="text/javascript" src="{% static 'script.js' %}"></script>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
     </body>
 </html>
