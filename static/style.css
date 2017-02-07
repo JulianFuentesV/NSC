@@ -24,7 +24,6 @@ html, body{
     max-height: 120px;
     border: 1px solid #cfd8dc;
     border-radius: 50%;
-    cursor: move;
 }
 
 .clicked{
@@ -48,6 +47,14 @@ html, body{
 
 .absolute{
     position: absolute;
+}
+
+.c_move{
+    cursor: move;
+}
+
+.c_default{
+    cursor: default;
 }
 
 /* MARGINS AND PADDINGS */

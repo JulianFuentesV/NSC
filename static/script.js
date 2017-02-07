@@ -21,11 +21,11 @@ function init(){
 
 function dragStart(e){
     //this.style.backgroundColor = "blue";
-    element = this;
+    /*element = this;
     var dad = document.createElement("p");
     var child = this.cloneNode(true);
-    dad.appendChild(child);
-    e.dataTransfer.setData("child", dad.innerHTML);
+    dad.appendChild(child);*/
+    e.dataTransfer.setData("id_element", e.target.id);
 }
 
 function dragOver(e){
@@ -44,9 +44,15 @@ function dragEnd(e){
 function dropStart(e){
     e.preventDefault();
     var connector = "<img id='arrow' src='/static/images/arrow.png' style='vertical-align: top; margin-top: 55px;'/>";
-    var data = e.dataTransfer.getData("child");
+    var data = e.dataTransfer.getData("id_element");
+    var elem = document.getElementById(data);
+    var clone = elem.cloneNode(true);
+    clone.setAttribute('draggable', false);
+    clone.removeClass('c_move');
     this.innerHTML += connector;
-    this.innerHTML += data;
+    //this.innerHTML += data;
+    //e.target.appendChild(connector);
+    e.target.appendChild(clone);
     console.log("CON: "+connector);
     console.log("DAT: "+data);
     //element.parentNode.removeChild(element);
@@ -62,4 +68,8 @@ function onMouseOver(e){
 
 function onMouseOut(e){
     console.log("onMouseOUT!");
+}
+
+function cleanBoard(){
+    board.innerHTML = "";
 }

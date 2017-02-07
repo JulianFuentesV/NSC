@@ -17,7 +17,8 @@
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
                         <li><a href="#">Configure</a></li>
                         <li><a href="#">Delete</a></li>
-                        <li><a href="{% url 'index' %}">Restart</a></li>
+                        <!--<li><a href="{% url 'index' %}">Restart</a></li>-->
+                        <li onclick="cleanBoard()">Restart</li>
                     </ul>
                 </div>
             </nav>
@@ -28,9 +29,9 @@
                     <br/>
                     <h5 class="center-align">Network Service Functions</h5>
                     <br/>
-                    <img id="firewall" src="{% static 'images/firewall.png' %}" class="item hoverable margin-sm" draggable="true"/>
-                    <img id="loadBalancer" src="{% static 'images/loadbalancer.png' %}" class="item hoverable margin-sm" draggable="true"/>
-                    <img src="{% static 'images/network.png' %}" class="item hoverable margin-sm" draggable="true"/>
+                    <img id="firewall" src="{% static 'images/firewall.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
+                    <img id="loadBalancer" src="{% static 'images/loadbalancer.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
+                    <img id="router" src="{% static 'images/network.png' %}" class="item hoverable margin-smc_move" draggable="true"/>
                 </div>
             </div>
             <div class="col s9">

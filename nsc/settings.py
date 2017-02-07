@@ -76,11 +76,11 @@ WSGI_APPLICATION = 'nsc.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'jufuentes$default',
-        'USER': 'jufuentes',
-        'PASSWORD' : 'pythonanywhere',
-        'HOST' : 'jufuentes.mysql.pythonanywhere-services.com',
+        'ENGINE': 'mysql_cymysql',
+        'NAME': 'tesis',
+        'USER': 'root',
+        'PASSWORD' : '',
+        'HOST' : 'localhost',
         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
     }
 }
@@ -122,11 +122,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
-
 # default static files settings for PythonAnywhere.
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
-MEDIA_ROOT = u'/home/jufuentes/nsc/media'
-MEDIA_URL = '/media/'
-STATIC_ROOT = u'/home/jufuentes/nsc/static'
+
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media")
