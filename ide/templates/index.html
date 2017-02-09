@@ -2,10 +2,10 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>IDE | NSC</title>
     </head>
@@ -18,7 +18,7 @@
                         <li><a href="#">Configure</a></li>
                         <li><a href="#">Delete</a></li>
                         <!--<li><a href="{% url 'index' %}">Restart</a></li>-->
-                        <li onclick="cleanBoard()">Restart</li>
+                        <li id="btn_restart">Restart</li>
                     </ul>
                 </div>
             </nav>
@@ -43,8 +43,19 @@
             </div>
         </div>
         <div class="fixed-action-btn"><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">play_arrow</i></a></div>
-        <script type="text/javascript" src="{% static 'script.js' %}"></script>
+        <!--MODAL FIREWALL-->
+        <div id="modal_config" class="modal bottom-sheet">
+            <div id="modal_body" class="modal-content">
+                <h4 id="modal_title"></h4>
+                <p id="modal_var_1"></p>
+            </div>
+            <div class="modal-footer">
+              <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+        <script type="text/javascript" src="{% static 'script.js' %}"></script>
     </body>
 </html>
