@@ -5,6 +5,7 @@ html, body{
 #resources{
     height: 500px;
     overflow-y: scroll;
+    overflow-x: hidden; 
 }
 
 #board{
@@ -18,10 +19,8 @@ html, body{
 }
 
 .item{
-    width: 50%;
-    height: 50%;
-    max-width: 120px;
-    max-height: 120px;
+    width: 100px;
+    height: 100px;
     border: 1px solid #cfd8dc;
     border-radius: 50%;
 }

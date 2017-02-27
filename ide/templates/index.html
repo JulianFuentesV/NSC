@@ -24,8 +24,8 @@
             </nav>
         </div>
         <div class="row">
-            <div class="col s3">
-                <div id="resources" class="card">
+            <div class="col s2">
+                <div id="resources" class="card center-align">
                     <br/>
                     <h5 class="center-align">Network Service Functions</h5>
                     <br/>
@@ -34,7 +34,7 @@
                     <img id="router" src="{% static 'images/network.png' %}" class="item hoverable margin-smc_move" draggable="true"/>
                 </div>
             </div>
-            <div class="col s9">
+            <div class="col s10">
                 <div id="board" class="card">
                     <br/>
                     <h4 class="center-align">Chains Constructor</h4>
@@ -42,19 +42,23 @@
                 </div>
             </div>
         </div>
-        <div class="fixed-action-btn"><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">play_arrow</i></a></div>
-        <!--MODAL FIREWALL-->
+        <div id="btn_run" class="fixed-action-btn"><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">play_arrow</i></a></div>
+        <!--MODAL CONFIG-->
         <div id="modal_config" class="modal bottom-sheet">
             <div id="modal_body" class="modal-content">
                 <h4 id="modal_title"></h4>
-                <p id="modal_var_1"></p>
+                <ul>
+                    <li><h5 id="modal_var_1"></h5>PRUEAN</li>
+                </ul>
             </div>
             <div class="modal-footer">
               <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
 
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <!--<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
         <script type="text/javascript" src="{% static 'script.js' %}"></script>
     </body>
