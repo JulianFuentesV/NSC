@@ -1,7 +1,9 @@
 $(document).ready(function(){
 
-    var ip = "192.168.0.22:8080";
+    var ip = "192.168.0.18:8080";
     var switchID;
+    var totalItems;
+    var content;
 
     $("#firewall").tooltip({delay: 10, tooltip: "Firewall", position: 'right'});
     $("#loadBalancer").tooltip({delay: 10, tooltip: "Load Balancer", position: 'right'});
@@ -33,26 +35,93 @@ $(document).ready(function(){
         $('#modal_config').modal('open');
     });
 
+    $("#btn_restart").on("click", function(){
+        $("#board").html('<br/><h4 class="center-align">Chains Constructor</h4><br/>');
+    });
+
+    $("#btn_delete").on("click", function(){
+        $('.modal').modal();
+        $('#modal_delete').modal('open');
+    });
+
+    $("#btn_save").on("click", function(){
+        $('.modal').modal();
+        items = $("#board").find(".item");
+        if (items[0]) {
+            $('#modal_save').modal('open');
+            //totalItems = items[0].src;
+            totalItems = 0;
+            content = "{";
+            while(items[totalItems]){
+                if (totalItems>0) {content = content+","}
+                content = content+'"'+totalItems+'":"'+items[totalItems].id+'"';
+                totalItems++;
+            }
+            content = content+"}";
+            console.log("content: "+content);
+            console.log("totalItems: "+totalItems);
+        } else {
+            Materialize.toast("Error: Board empty!", 3000);
+        }
+    });
+
+    $("#btn_saveChain").on("click", function(){
+
+        name = $("#name").val();
+        description = $("#description").val();
+        console.log("NAME: "+name+" DES: "+description);
+        Materialize.toast("Saving chain..", 3000, 'rounded');
+        url = '/ide/chain/save/'
+        type = 'POST'
+        data = { name: name, description: description, html: content, size: totalItems }
+        msgSuccess = "Chain saved!";
+        msgError = "Error saving chain!";
+        ajaxRequest(url, type, data, msgSuccess, msgError);
+    });
+
     $("#btn_run").on("click", function(){
-        Materialize.toast("Habilitando Firewall..", 3000, 'rounded');
+        Materialize.toast("Enabling Firewall..", 3000, 'rounded');
         $.ajax({
             url: 'http://'+ip+'/firewall/module/enable/'+switchID,
             type: 'PUT',
-            /*beforeSend: function(xhr) {
-                xhr.setRequestHeader('Access-Control-Request-Method','PUT');
-            },*/
             success: function(result){
-                Materialize.toast("Firewall habilitado!", 4000, 'rounded');
-                window.location.href="/ide/status";
+                Materialize.toast("Firewall enabled!", 3000);
+                setTimeout(function(){
+                    window.location.replace('/ide/status/?ip='+ip+'&id='+switchID);
+                }, 3000);
             },
             error: function(result){
-                Materialize.toast("Error! Imposible iniciar", 4000, 'rounded');
+                Materialize.toast("Error! Imposible iniciar", 4000);
             }
         });
     });
+
+    function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
+        csrftoken = Cookies.get('csrftoken');
+        $.ajax({
+            url: mUrl,
+            type: mType,
+            data: mData,
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function(result){
+                console.log("SUCCESS");
+                Materialize.toast(msgSuccess, 3000);
+            },
+            error: function(result){
+                console.log("ERROR");
+                Materialize.toast(msgError, 3000);
+            }
+        });
+    }
+
 });
 
 /* ------ TODO:
+
+    render template after post
+
     items tooltip (materializecss)
     btn restart with cleanBoard()
 */

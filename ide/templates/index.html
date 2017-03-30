@@ -12,13 +12,13 @@
     <body>
         <div class="navbar-fixed">
             <nav>
-                <div class="nav-wrapper light-blue darken-4">
+                <div class="nav-wrapper light-blue darken-4 padding-left-right-sm">
                     <a href="{% url 'index' %}" class="brand-logo white-text">Network Service Chaining</a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
-                        <li><a href="#">Configure</a></li>
-                        <li><a href="#">Delete</a></li>
+                        <li id="btn_save"><a>Save</a></li>
+                        <li id="btn_delete"><a>Delete</a></li>
+                        <li id="btn_restart"><a>Restart</a></li>
                         <!--<li><a href="{% url 'index' %}">Restart</a></li>-->
-                        <li id="btn_restart">Restart</li>
                     </ul>
                 </div>
             </nav>
@@ -31,7 +31,16 @@
                     <br/>
                     <img id="firewall" src="{% static 'images/firewall.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
                     <img id="loadBalancer" src="{% static 'images/loadbalancer.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
-                    <img id="router" src="{% static 'images/network.png' %}" class="item hoverable margin-smc_move" draggable="true"/>
+                    <img id="router" src="{% static 'images/network.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
+                    <br>
+                    <hr>
+                    {% for k, v in dic.items %}
+                        <h5 class="center-align">{{ v.name }}</h5>
+                        <img id="{{k}}" src="{% static 'images/link.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
+                        <BR>
+                        <p>{{ v.description }}</p>
+                        <hr>
+                    {% endfor %}
                 </div>
             </div>
             <div class="col s10">
@@ -43,16 +52,52 @@
             </div>
         </div>
         <div id="btn_run" class="fixed-action-btn"><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">play_arrow</i></a></div>
+
         <!--MODAL CONFIG-->
         <div id="modal_config" class="modal bottom-sheet">
             <div id="modal_body" class="modal-content">
                 <h4 id="modal_title"></h4>
-                <ul>
-                    <li><h5 id="modal_var_1"></h5>PRUEAN</li>
-                </ul>
+                <h5 id="modal_var_1"></h5>
             </div>
             <div class="modal-footer">
               <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+
+        <!--MODAL SAVE-->
+        <div id="modal_save" class="modal bottom-sheet">
+            <div id="modal_body" class="modal-content">
+                <div class="input-field inline">
+                  <input id="name" type="text" class="validate">
+                  <label for="name">Chain Name</label>
+                </div>
+
+                <div class="input-field col s6">
+                  <input id="description" type="text" class="validate">
+                  <label for="description">Description</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button id="btn_saveChain" class=" modal-action modal-close waves-effect waves-green btn-flat">Save</button>
+            </div>
+        </div>
+
+        <!--MODAL DELETE-->
+        <div id="modal_delete" class="modal bottom-sheet">
+            <div id="modal_body" class="modal-content">
+                <h4>Delete chains</h4>
+                <form action="chain/delete/" method="POST">
+                    {% csrf_token %}
+                    {% for k, v in dic.items %}
+                        <p>
+                          <input type="checkbox" name="id" value="{{v.id}}" id="chain_{{k}}" />
+                          <label for="chain_{{k}}">{{v.name}}</label>
+                        </p>
+                    {% endfor %}
+                    <button type="submit" class=" modal-action modal-close waves-effect waves-green btn-flat">Delete</button>
+                </form>
+            </div>
+            <div class="modal-footer">
             </div>
         </div>
 
@@ -60,6 +105,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+        <script type="text/javascript" src="{% static 'jscookie.js' %}"></script>
         <script type="text/javascript" src="{% static 'script.js' %}"></script>
     </body>
 </html>
