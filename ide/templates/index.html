@@ -13,8 +13,9 @@
         <div class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper light-blue darken-4 padding-left-right-sm">
-                    <a href="{% url 'index' %}" class="brand-logo white-text">Network Service Chaining</a>
+                    <a href="{% url 'index' %}" class="brand-logo white-text">Network Service Chaining | <span style="font-size: 12px;">IP: </span><span id="ip" style="font-size: 12px;">undefined yet.</span></a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li id="btn_config"><a>Configuration</a></li>
                         <li id="btn_save"><a>Save</a></li>
                         <li id="btn_delete"><a>Delete</a></li>
                         <li id="btn_restart"><a>Restart</a></li>
@@ -58,9 +59,10 @@
             <div id="modal_body" class="modal-content">
                 <h4 id="modal_title"></h4>
                 <h5 id="modal_var_1"></h5>
+                <div id="modal_config_body"></div>
             </div>
             <div class="modal-footer">
-              <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+              <a href="" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
 

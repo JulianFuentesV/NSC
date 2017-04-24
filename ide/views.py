@@ -50,6 +50,19 @@ def deleteChain(request):
 		Chain.objects.get(id=i).delete()
 	return redirect('index')
 
+def run(request):
+	ids = request.POST.getlist('chain[]')
+	print(ids)
+	def switch(i):
+		return {
+			'firewall':'cmd fw',
+			'loadBalancer':'cmd lb',
+			'proxy':'cmd proxy'
+		}.get(i,i) #if i is a NF, return cmd. Else return chain's id (i).
+	for i in ids:
+		print(switch(i))
+	return HttpResponse(status=200)
+
 def status(request):
 	ip = request.GET.get('ip','0.0.0.0')
 	switchID = request.GET.get('id', '0000')

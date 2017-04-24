@@ -44,6 +44,14 @@ $(document).ready(function(){
         $('#modal_delete').modal('open');
     });
 
+    $("#btn_config").on("click", function(){
+        $("#modal_title").text("Configuration");
+        $("modal_var_1").text("Set controller IP");
+        $("modal_config_body").append(/*Input para IP*/);
+        $('.modal').modal();
+        $('#modal_config').modal('open');
+    });    
+
     $("#btn_save").on("click", function(){
         $('.modal').modal();
         items = $("#board").find(".item");
@@ -54,7 +62,7 @@ $(document).ready(function(){
             content = "{";
             while(items[totalItems]){
                 if (totalItems>0) {content = content+","}
-                content = content+'"'+totalItems+'":"'+items[totalItems].id+'"';
+                content = content+'"'+totalItems+'":"'+items[totalItems].id.split('_')[0]+'"';
                 totalItems++;
             }
             content = content+"}";
@@ -66,7 +74,6 @@ $(document).ready(function(){
     });
 
     $("#btn_saveChain").on("click", function(){
-
         name = $("#name").val();
         description = $("#description").val();
         console.log("NAME: "+name+" DES: "+description);
@@ -80,6 +87,23 @@ $(document).ready(function(){
     });
 
     $("#btn_run").on("click", function(){
+        items = $("#board").find(".item");
+        totalItems = 0;
+        ids = [];
+        if (items[0]) {
+            while(items[totalItems]){
+                itemID = items[totalItems].id.split('_')[0];
+                console.log("item id: "+itemID);
+                ids[totalItems] = itemID;
+                totalItems++;
+            }
+            ajaxRequest('/ide/run/','POST', {"chain[]": ids}, "Chain executed!", "Error executing chain..");
+        } else {
+            Materialize.toast("Error: Board empty!", 3000);
+        }
+    });
+
+    /*$("#btn_run").on("click", function(){
         Materialize.toast("Enabling Firewall..", 3000, 'rounded');
         $.ajax({
             url: 'http://'+ip+'/firewall/module/enable/'+switchID,
@@ -94,7 +118,7 @@ $(document).ready(function(){
                 Materialize.toast("Error! Imposible iniciar", 4000);
             }
         });
-    });
+    });*/
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
         csrftoken = Cookies.get('csrftoken');
