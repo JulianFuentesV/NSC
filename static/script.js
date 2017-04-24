@@ -46,11 +46,18 @@ $(document).ready(function(){
 
     $("#btn_config").on("click", function(){
         $("#modal_title").text("Configuration");
-        $("modal_var_1").text("Set controller IP");
-        $("modal_config_body").append(/*Input para IP*/);
+        var input_ip = $("#input_ip");
+        if (!input_ip.length) {
+            $("#modal_config_body").append('<input id="input_ip" type="text" name="ip" placeholder="Controller IP">');
+        }
         $('.modal').modal();
         $('#modal_config').modal('open');
-    });    
+    });
+
+    $("#btn_saveConfig").on("click", function(){
+        console.log("text: "+$("#input_ip").val());
+        $("#ip").text($("#input_ip").val());
+    });
 
     $("#btn_save").on("click", function(){
         $('.modal').modal();
