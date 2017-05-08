@@ -94,6 +94,8 @@ $(document).ready(function(){
     });
 
     $("#btn_run").on("click", function(){
+        ip = $("#ip").text();
+        console.log("IP: "+ip);
         items = $("#board").find(".item");
         totalItems = 0;
         ids = [];
@@ -104,7 +106,10 @@ $(document).ready(function(){
                 ids[totalItems] = itemID;
                 totalItems++;
             }
-            ajaxRequest('/ide/run/','POST', {"chain[]": ids}, "Chain executed!", "Error executing chain..");
+            //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
+            $.get('http://'+ip+'/launcher?f=fw&s=px&t=lb');
+            console.log("sigue");
+            window.location.replace('/ide/status/?ip='+ip);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }

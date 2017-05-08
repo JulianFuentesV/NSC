@@ -52,7 +52,9 @@ def deleteChain(request):
 
 def run(request):
 	ids = request.POST.getlist('chain[]')
+	ip = request.POST.get('ip')
 	print(ids)
+	print(ip)
 	def switch(i):
 		return {
 			'firewall':'cmd fw',
@@ -65,5 +67,8 @@ def run(request):
 
 def status(request):
 	ip = request.GET.get('ip','0.0.0.0')
-	switchID = request.GET.get('id', '0000')
-	return render(request, 'status.html', {'ip':ip, 'id':switchID})
+	funcs = request.GET.get('f','')
+	funcs = funcs.split(',')
+	print(funcs)
+	#switchID = request.GET.get('id', '0000')
+	return render(request, 'status.html', {'ip':ip, 'funcs':funcs})
