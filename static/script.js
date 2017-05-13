@@ -8,6 +8,8 @@ $(document).ready(function(){
     $("#firewall").tooltip({delay: 10, tooltip: "Firewall", position: 'right'});
     $("#loadBalancer").tooltip({delay: 10, tooltip: "Load Balancer", position: 'right'});
 
+    $('.collapsible').collapsible({accordion: true});
+
     $(".item").draggable({ helper: 'clone', scroll: false });
     $("#board").droppable({
         accept: ".item",
@@ -109,7 +111,7 @@ $(document).ready(function(){
             //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
             $.get('http://'+ip+'/launcher?f=fw&s=px&t=lb');
             console.log("sigue");
-            window.location.replace('/ide/status/?ip='+ip);
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }

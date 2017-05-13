@@ -67,7 +67,7 @@ def run(request):
 
 def status(request):
 	ip = request.GET.get('ip','0.0.0.0')
-	funcs = request.GET.get('f','')
+	funcs = request.GET.get('funcs','')
 	funcs = funcs.split(',')
 	print(funcs)
 	#switchID = request.GET.get('id', '0000')

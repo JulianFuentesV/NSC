@@ -13,13 +13,6 @@ html, body{
     overflow-y: scroll;
 }
 
-#cont{
-    height: 550px;
-    overflow-y: scroll;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
 #arrow{
     width: 80px;
     height: auto;
