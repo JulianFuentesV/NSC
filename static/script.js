@@ -1,14 +1,12 @@
 $(document).ready(function(){
 
-    var ip = "192.168.0.18:8080";
+    var ip = "";
     var switchID;
     var totalItems;
     var content;
 
     $("#firewall").tooltip({delay: 10, tooltip: "Firewall", position: 'right'});
     $("#loadBalancer").tooltip({delay: 10, tooltip: "Load Balancer", position: 'right'});
-
-    $('.collapsible').collapsible({accordion: true});
 
     $(".item").draggable({ helper: 'clone', scroll: false });
     $("#board").droppable({
@@ -27,7 +25,7 @@ $(document).ready(function(){
         }
     });
 
-    $("#board").on("click", "#firewall_OnBoard", function(){
+    /*$("#board").on("click", "#firewall_OnBoard", function(){
         $("#modal_title").text("Firewall Configuration");
         $.getJSON("http://"+ip+"/firewall/module/status", function(data){
             switchID = data[0].switch_id;
@@ -35,7 +33,7 @@ $(document).ready(function(){
         });
         $('.modal').modal();
         $('#modal_config').modal('open');
-    });
+    });*/
 
     $("#btn_restart").on("click", function(){
         $("#board").html('<br/><h4 class="center-align">Chains Constructor</h4><br/>');
@@ -109,8 +107,8 @@ $(document).ready(function(){
                 totalItems++;
             }
             //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
-            $.get('http://'+ip+'/launcher?f=fw&s=px&t=lb');
-            console.log("sigue");
+            $.get('http://'+ip+'/launcher?f='+ids);
+            console.log("get pass");
             window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
@@ -155,11 +153,3 @@ $(document).ready(function(){
     }
 
 });
-
-/* ------ TODO:
-
-    render template after post
-
-    items tooltip (materializecss)
-    btn restart with cleanBoard()
-*/

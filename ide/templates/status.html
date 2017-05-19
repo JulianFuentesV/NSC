@@ -19,10 +19,10 @@
                 </div>
             </nav>
         </div>
-        <div class="row">
+        <div id="activatedItems" class="row">
             <div class="col s2 offset-s3">
                 {% if "firewall" in funcs %}
-                    <div class="card teal darken-1 center-align waves-effect waves-light">
+                    <div id="firewall" class="card teal darken-1 center-align waves-effect waves-light itemSelected">
                         <p style="color: white; font-size: 18px; width: 205px; height: 10px; margin: 5px 0 20px 0px"><i class="material-icons left" style="margin-left: 5px;">done</i>Firewall</p>
                     </div>
                 {% else %}
@@ -33,7 +33,7 @@
             </div>
             <div class="col s2">
                 {% if "loadBalancer" in funcs %}
-                    <div class="card teal darken-1 center-align waves-effect waves-light">
+                    <div id="loadBalancer" class="card teal darken-1 center-align waves-effect waves-light itemSelected">
                         <p style="color: white; font-size: 18px; width: 205px; height: 10px; margin: 5px 0 20px 0px"><i class="material-icons left" style="margin-left: 5px;">done</i>Load Balancer</p>
                     </div>
                 {% else %}
@@ -44,7 +44,7 @@
             </div>
             <div class="col s2">
                 {% if "proxy" in funcs %}
-                    <div class="card teal darken-1 center-align waves-effect waves-light">
+                    <div id="proxy" class="card teal darken-1 center-align waves-effect waves-light itemSelected">
                         <p style="color: white; font-size: 18px; width: 205px; height: 10px; margin: 5px 0 20px 0px"><i class="material-icons left" style="margin-left: 5px;">done</i>Proxy</p>
                     </div>
                 {% else %}
@@ -54,72 +54,11 @@
                 {% endif %}
             </div>
         </div>
-        <div class="row">
-            <div class="col s4">
-                <ul class="collapsible popout" data-collapsible="accordion">
-                    <li>
-                      <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
-                      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                    </li>
-                    <li>
-                      <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
-                      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                    </li>
-                    <li>
-                      <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
-                      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="preloader-wrapper big active">
-      <div class="spinner-layer spinner-blue">
-        <div class="circle-clipper left">
-          <div class="circle"></div>
-        </div><div class="gap-patch">
-          <div class="circle"></div>
-        </div><div class="circle-clipper right">
-          <div class="circle"></div>
-        </div>
-      </div>
-
-      <div class="spinner-layer spinner-red">
-        <div class="circle-clipper left">
-          <div class="circle"></div>
-        </div><div class="gap-patch">
-          <div class="circle"></div>
-        </div><div class="circle-clipper right">
-          <div class="circle"></div>
-        </div>
-      </div>
-
-      <div class="spinner-layer spinner-yellow">
-        <div class="circle-clipper left">
-          <div class="circle"></div>
-        </div><div class="gap-patch">
-          <div class="circle"></div>
-        </div><div class="circle-clipper right">
-          <div class="circle"></div>
-        </div>
-      </div>
-
-      <div class="spinner-layer spinner-green">
-        <div class="circle-clipper left">
-          <div class="circle"></div>
-        </div><div class="gap-patch">
-          <div class="circle"></div>
-        </div><div class="circle-clipper right">
-          <div class="circle"></div>
-        </div>
-      </div>
-    </div>
-        </div>
         <!--<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
         <script type="text/javascript" src="{% static 'jscookie.js' %}"></script>
-        <script type="text/javascript" src="{% static 'script.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scriptStatus.js' %}"></script>
     </body>
 </html>
