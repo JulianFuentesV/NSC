@@ -7,6 +7,7 @@ $(document).ready(function(){
 
     $("#firewall").tooltip({delay: 10, tooltip: "Firewall", position: 'right'});
     $("#loadBalancer").tooltip({delay: 10, tooltip: "Load Balancer", position: 'right'});
+    $("#router").tooltip({delay: 10, tooltip: "Router", position: 'right'});
 
     $(".item").draggable({ helper: 'clone', scroll: false });
     $("#board").droppable({
@@ -107,7 +108,7 @@ $(document).ready(function(){
                 totalItems++;
             }
             //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
-            $.get('http://'+ip+'/launcher?f='+ids);
+            //$.get('http://'+ip+'/launcher?f='+ids);
             console.log("get pass");
             window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids);
         } else {

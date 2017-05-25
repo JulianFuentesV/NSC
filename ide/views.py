@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Chain
 from django.http import HttpResponse
 import json
+import urllib.request
 
 def index(request):
 	data = {}
@@ -59,7 +60,7 @@ def run(request):
 		return {
 			'firewall':'cmd fw',
 			'loadBalancer':'cmd lb',
-			'proxy':'cmd proxy'
+			'router':'cmd router'
 		}.get(i,i) #if i is a NF, return cmd. Else return chain's id (i).
 	for i in ids:
 		print(switch(i))
@@ -71,4 +72,14 @@ def status(request):
 	funcs = funcs.split(',')
 	print(funcs)
 	#switchID = request.GET.get('id', '0000')
+	for i in funcs:
+		print(i)
+		if i != "firewall" and i != "loadBalancer" and i != "router":
+			chain = Chain.objects.get(id=i)
+			print(chain)
+			objs_json = chain.html
+			print(objs_json)
+			nfs = json.loads(objs_json)
+			print(nfs)
+
 	return render(request, 'status.html', {'ip':ip, 'funcs':funcs})

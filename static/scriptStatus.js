@@ -97,39 +97,45 @@ $(document).ready(function(){
             case 'firewall':
                 console.log("firewall encontrado");
                 url = "http://"+ip+":8080/firewall/module/status";
-                //ajaxRequest(url, 'GET', null, "", "");
-                $.getJSON("http://"+ip+":8080/firewall/module/status", function(data){
-                    console.log(data);
-                    $("#information").html("");
-                    var listFw =
-                         '<ul id="listFw" class="collapsible popout" data-collapsible="accordion">'
-                        +'   <li>'
-                        +'    <div class="collapsible-header active"><i class="material-icons">view_column</i>Firewall</div>'
-                        +'    <div class="collapsible-body center-align"><span>';
-                    var check = "";
-                    data.forEach(function(element) {
-                        switchID = element.switch_id;
-                        status = element.status;
-                        if(true){check="checked";} //TODO: Falta validacion status == enabled
+                setTimeout(function(){
+                    $.getJSON("http://"+ip+":8080/firewall/module/status", function(data){
+                        console.log(data);
+                        $("#information").html("");
+                        var listFw =
+                            '<ul id="listFw" class="collapsible popout" data-collapsible="accordion">'
+                            +'   <li>'
+                            +'    <div class="collapsible-header active"><i class="material-icons">view_column</i>Firewall</div>'
+                            +'    <div class="collapsible-body center-align"><span>';
+                        var check = "";
+                        data.forEach(function(element) {
+                            switchID = element.switch_id;
+                            status = element.status;
+                            console.log("status: "+status);
+                            if(status === "enable"){
+                                check = "checked";
+                            } else {
+                                check = "";
+                            }
+                            listFw = listFw +
+                            '    <b>Switch '+switchID+': </b>'+status+'. '
+                            +'<div class="switch"><label>Off'
+                            +'<input type="checkbox" '+check+'>'
+                            +'<span class="lever"></span>On</label></div>'
+                            +'</br>';
+                        }, this);
                         listFw = listFw +
-                        '    <b>Switch '+switchID+': </b>'+status+'. '
-                        +'<div class="switch"><label>Off'
-                        +'<input type="checkbox" '+check+'>'
-                        +'<span class="lever"></span>On</label></div>'
-                        +'</br>';
-                    }, this);
-                    listFw = listFw +
-                         '     </span></div>'
-                        +'    </li>'
-                        +'</ul>';
+                            '     </span></div>'
+                            +'    </li>'
+                            +'</ul>';
 
-                    $("#information").append(listFw);
-                    $("#listFw").addClass("col");
-                    $("#listFw").addClass(columns);
-                    $("#listFw").addClass("offset-"+offset);
-                    $('.collapsible').collapsible({accordion: true});
+                        $("#information").append(listFw);
+                        $("#listFw").addClass("col");
+                        $("#listFw").addClass(columns);
+                        $("#listFw").addClass("offset-"+offset);
+                        $('.collapsible').collapsible({accordion: true});
 
-                }).fail(function(){"error firewall status"});;
+                    }).fail(function(){Materialize.toast("Timeout", 3000);});
+                }, 5000);
                 break;
             case 'loadBalancer':
                 console.log("Load balancer encontrado");
