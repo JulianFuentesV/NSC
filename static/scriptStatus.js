@@ -1,5 +1,9 @@
 $(document).ready(function(){
 
+    var url = $("#url").text();
+    console.log("url: "+url);
+    $.get(url);
+
     var ip = $("#ip").text();
     ip = ip.split(":")[0];
     console.log("IP: "+ip);
@@ -139,6 +143,9 @@ $(document).ready(function(){
                 break;
             case 'loadBalancer':
                 console.log("Load balancer encontrado");
+                break;
+            case 'router':
+                console.log("Proxy encontrado");
                 break;
             default:
                 console.log(activatedIds[i]+" encontrado");

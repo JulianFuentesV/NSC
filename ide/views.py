@@ -71,15 +71,36 @@ def status(request):
 	funcs = request.GET.get('funcs','')
 	funcs = funcs.split(',')
 	print(funcs)
+	fs = ""
 	#switchID = request.GET.get('id', '0000')
 	for i in funcs:
-		print(i)
+		if fs != "":
+			fs = fs + ","
+		print("i: "+i)
 		if i != "firewall" and i != "loadBalancer" and i != "router":
 			chain = Chain.objects.get(id=i)
-			print(chain)
 			objs_json = chain.html
-			print(objs_json)
 			nfs = json.loads(objs_json)
+			print("nfs: ")
 			print(nfs)
-
-	return render(request, 'status.html', {'ip':ip, 'funcs':funcs})
+			orden = [None]*chain.size
+			for pos in nfs:
+				print("pos: " + pos)
+				nf = nfs[pos]
+				print("nf: " + nf)
+				orden[int(pos)] = nf
+			print("orden")
+			print(orden)
+			for f in range(0,len(orden)):	# 0 < f < len(orden)
+				if f > 0: 
+					fs = fs + ","
+				print("orden["+str(f)+"]: "+orden[f])
+				fs = fs + orden[f]
+		else:
+			fs = fs + i
+	print("fs:")
+	print(fs)
+	url = 'http://'+ip+'/launcher?f='+fs
+	print(url)
+	#urllib.request.urlopen(url).read()
+	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url})
