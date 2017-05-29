@@ -96,6 +96,8 @@ $(document).ready(function(){
     console.log("activatedIds");
     console.log(activatedIds);
 
+    var swIds = [];
+
     for(i = 0; i<totalItems; i++){
         switch(activatedIds[i]){
             case 'firewall':
@@ -107,12 +109,13 @@ $(document).ready(function(){
                         $("#information").html("");
                         var listFw =
                             '<ul id="listFw" class="collapsible popout" data-collapsible="accordion">'
-                            +'   <li>'
-                            +'    <div class="collapsible-header active"><i class="material-icons">view_column</i>Firewall</div>'
-                            +'    <div class="collapsible-body center-align"><span>';
+                            +'   <li id="itemFw">'
+                            +'    <div class="collapsible-header active"><i class="material-icons">view_column</i>Firewall Status</div>'
+                            +'    <div id="bodyFw" class="collapsible-body center-align"><span>';
                         var check = "";
                         data.forEach(function(element) {
                             switchID = element.switch_id;
+                            swIds.push(switchID);
                             status = element.status;
                             console.log("status: "+status);
                             if(status === "enable"){
@@ -121,15 +124,19 @@ $(document).ready(function(){
                                 check = "";
                             }
                             listFw = listFw +
-                            '    <b>Switch '+switchID+': </b>'+status+'. '
+                            //'    <b>Switch '+switchID+': </b>'+status+'. '
+                            '    <b>Switch '+switchID+' </b>'
                             +'<div class="switch"><label>Off'
-                            +'<input type="checkbox" '+check+'>'
+                            +'<input id="cb_'+switchID+'" type="checkbox" class="cb_fw" '+check+'>'
                             +'<span class="lever"></span>On</label></div>'
                             +'</br>';
                         }, this);
                         listFw = listFw +
                             '     </span></div>'
                             +'    </li>'
+                            +'    <li><div id="headerRulesFw" class="collapsible-header"><i class="material-icons">view_column</i>Firewall Rules</div>'
+                            +'      <div id="bodyRulesFw" class="collapsible-body center-align"><span>'
+                            +'      </span></div></li>'
                             +'</ul>';
 
                         $("#information").append(listFw);
@@ -153,6 +160,85 @@ $(document).ready(function(){
         }
     }
 
+    $("#information").on("click",".cb_fw",function(){
+        // Mascara para no permitir mas clicks
+        showLoadingMask();
+        // Hacer peticion
+        var idClicked = this.id.split("_")[1]; //id switch clickeado
+        console.log(idClicked);
+        var isChecked = this.checked;
+        console.log(isChecked);
+        var csrftoken = Cookies.get('csrftoken');
+        var mUrl = "http://"+ip+":8080/firewall/module/";
+        if(isChecked){
+            $.ajax({
+                url: mUrl+"enable/"+idClicked,
+                type: "PUT",
+                crossDomain: true,
+                success: function(result){
+                    hideLoadingMask();
+                    Materialize.toast("Switch enabled", 3000);
+                },
+                error: function(result){
+                    $("#cb_"+idClicked).prop( "checked", false );
+                    hideLoadingMask();
+                    console.log("ERROR");
+                    console.log(result);
+                    Materialize.toast("Error", 3000);
+                }
+            });
+        } else {
+            $.ajax({
+                url: mUrl+"disable/"+idClicked,
+                type: "PUT",
+                crossDomain: true,
+                success: function(result){
+                    hideLoadingMask();
+                    Materialize.toast("Switch disabled", 3000);
+                },
+                error: function(result){
+                    $("#cb_"+idClicked).prop( "checked", false );
+                    hideLoadingMask();
+                    console.log("ERROR");
+                    console.log(result);
+                    Materialize.toast("Error", 3000);
+                }
+            });
+        }
+    });
+
+    //$("#information").on("click",".lever",function(){console.log("lever");});
+
+    $("#information").on("click","#headerRulesFw",function(){
+        if($("#headerRulesFw").hasClass("active")){
+            // Open tab
+            showLoadingMask();
+            $("#bodyRulesFw").html("");
+            var bodyRules = "";
+            swIds.forEach(function(sid){
+                bodyRules = bodyRules + "<p><b>Switch "+sid+"</b></p>";
+                $.getJSON("http://"+ip+":8080/firewall/rules/"+sid, function(response){
+                    console.log("response rules");
+                    console.log(response);
+                    bodyRules = bodyRules + "<p>"+response[0].access_control_list+"</p>";
+                    console.log(response[0]);
+                    console.log(response[0].access_control_list);
+                }).fail(function(){Materialize.toast("Timeout", 3000);});
+            },this);
+            bodyRules = bodyRules + "<hr><h5>New Rule</h5>"
+            + '<div class="input-field"><select multiple>'
+            + '<option value="" disabled selected>Choose your switch</option>';
+            swIds.forEach(function(sid){
+                bodyRules = bodyRules + "<option value='"+sid+"'>"+sid+"</option>";
+            },this);
+            bodyRules = bodyRules + "</select></div><hr>";
+            $("#bodyRulesFw").html(bodyRules);
+            hideLoadingMask();
+        } else {
+            // Close tab
+        }
+    });
+
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
         csrftoken = Cookies.get('csrftoken');
         $.ajax({
@@ -174,5 +260,56 @@ $(document).ready(function(){
             }
         });
     }
+
+    function showLoadingMask(){
+        $("#loading_mask").removeClass("display-none");
+    }
+
+    function hideLoadingMask(){
+        $("#loading_mask").addClass("display-none");
+    }
+
+    /*function setLoadingMask(cont){
+        $(cont).append('<div id="loading_mask" style="position: relative; background: rgba(0,0,0,0.25);">'
+                +' <div class="preloader-wrapper big active">'
+                +'     <div class="spinner-layer spinner-blue">'
+                +'         <div class="circle-clipper left">'
+                +'         <div class="circle"></div>'
+                +'         </div><div class="gap-patch">'
+                +'         <div class="circle"></div>'
+                +'         </div><div class="circle-clipper right">'
+                +'         <div class="circle"></div>'
+                +'         </div>'
+                +'     </div>'
+                +'     <div class="spinner-layer spinner-red">'
+                +'         <div class="circle-clipper left">'
+                +'         <div class="circle"></div>'
+                +'         </div><div class="gap-patch">'
+                +'         <div class="circle"></div>'
+                +'         </div><div class="circle-clipper right">'
+                +'         <div class="circle"></div>'
+                +'         </div>'
+                +'     </div>'
+                +'     <div class="spinner-layer spinner-yellow">'
+                +'         <div class="circle-clipper left">'
+                +'         <div class="circle"></div>'
+                +'         </div><div class="gap-patch">'
+                +'         <div class="circle"></div>'
+                +'         </div><div class="circle-clipper right">'
+                +'         <div class="circle"></div>'
+                +'         </div>'
+                +'     </div>'
+                +'    <div class="spinner-layer spinner-green">'
+                +'        <div class="circle-clipper left">'
+                +'        <div class="circle"></div>'
+                +'        </div><div class="gap-patch">'
+                +'        <div class="circle"></div>'
+                +'        </div><div class="circle-clipper right">'
+                +'        <div class="circle"></div>'
+                +'        </div>'
+                +'    </div>'
+                +'</div>'
+            +'</div>');
+    }*/
 
 });

@@ -48,6 +48,14 @@ html, body{
     visibility: hidden;
 }
 
+.display-inline{
+    display: inline;
+}
+
+.display-none {
+    display: none;
+}
+
 .relative{
     position: relative;
 }
