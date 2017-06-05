@@ -226,17 +226,68 @@ $(document).ready(function(){
                 }).fail(function(){Materialize.toast("Timeout", 3000);});
             },this);
             bodyRules = bodyRules + "<hr><h5>New Rule</h5>"
-            + '<div class="input-field"><select multiple>'
+            + '<div class="input-field" style="padding: 0px 20px; max-width: 240px; margin: 0 auto;"><select id="select_fw" class = "center-align">'
             + '<option value="" disabled selected>Choose your switch</option>';
             swIds.forEach(function(sid){
-                bodyRules = bodyRules + "<option value='"+sid+"'>"+sid+"</option>";
+                bodyRules = bodyRules + "<option value='"+sid+"'>Switch "+sid+"</option>";
             },this);
-            bodyRules = bodyRules + "</select></div><hr>";
+            bodyRules = bodyRules + "</select></div>";
+            bodyRules= bodyRules
+            +'<div class="input-field inline">'
+            +'    <input id="source" type="text" class="validate" required>'
+            +'    <label for="source" data-error="wrong" data-success="right">Source</label>'
+            +'</div>'
+            +'<div class="input-field inline">'
+            +'    <input id="destination" type="text" class="validate" required>'
+            +'    <label for="destination" data-error="wrong" data-success="right">Destination</label>'
+            +'</div><br>'
+            +'<div class="input-field inline">'
+            +'    <input id="protocol" type="text" class="validate">'
+            +'    <label for="protocol" data-error="wrong" data-success="right">Protocol</label>'
+            +'</div>'
+            +'<div class="input-field inline">'
+            +'    <input id="actions" type="text" class="validate">'
+            +'    <label for="actions" data-error="wrong" data-success="right">Action</label>'
+            +'</div>'
+            +'<div class="input-field inline">'
+            +'    <input id="priority" type="text" class="validate">'
+            +'    <label for="priority" data-error="wrong" data-success="right">Priority</label>'
+            +'</div><br>'
+            +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action">Add rule'
+            +'    <i class="material-icons right">send</i>'
+            +'</button><br>';
             $("#bodyRulesFw").html(bodyRules);
+            $('select').material_select();
             hideLoadingMask();
         } else {
             // Close tab
         }
+    });
+
+    $("#information").on("click","#btn_addrule",function(){
+        showLoadingMask();
+        csrftoken = Cookies.get('csrftoken');
+        console.log("CLICK ADD RULE");
+        /*$.ajax({
+            url: 'http://'+ip+':8080/firewall/rules/'+$("#select_fw").val(),
+            type: 'POST',
+            data: '{"nw_src": "10.0.0.2/32", "nw_dst": "10.0.0.3/32", "nw_proto": "ICMP", "actions": "DENY", "priority": "10"}',
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function(result){
+                hideLoadingMask();
+                console.log("SUCCESS");
+                console.log(result);
+                //Materialize.toast(msgSuccess, 3000);
+            },
+            error: function(result){
+                hideLoadingMask();
+                console.log("ERROR");
+                console.log(result);
+                //Materialize.toast(msgError, 3000);
+            }
+        });*/
     });
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
