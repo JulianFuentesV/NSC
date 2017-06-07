@@ -216,16 +216,29 @@ $(document).ready(function(){
             $("#bodyRulesFw").html("");
             var bodyRules = "";
             swIds.forEach(function(sid){
-                bodyRules = bodyRules + "<p><b>Switch "+sid+"</b></p>";
+                bodyRules = bodyRules + "<p style='margin: 14px; padding: 0;'><b>Switch "+sid+"</b></p><div id='rules_"+sid+"'></div>";
                 $.getJSON("http://"+ip+":8080/firewall/rules/"+sid, function(response){
                     console.log("response rules");
                     console.log(response);
-                    bodyRules = bodyRules + "<p>"+response[0].access_control_list+"</p>";
+                    var acl = response[0].access_control_list;
+                    if(acl[0]){
+                        $("#rules_"+sid).html();
+                        var cont = "";
+                        for(i = 0; i < acl[0].rules.length; i++){
+                            var rules = acl[0].rules[i];
+                            cont = cont + "<p style='margin: 0 14px; padding: 0; text-align: left;'><a><i class='material-icons' style='color: #FF2222;'>delete</i></a> "+rules.rule_id+". Source: "+rules.nw_src+" - Destination: "+rules.nw_dst+" - Protocol: "+rules.nw_proto
+                            +" - Actions: "+rules.actions+" - Priority: "+rules.priority+" - Type: "+rules.dl_type+"</p>";
+                        }
+                        $("#rules_"+sid).html(cont);
+                    } else {
+                        $("#rules_"+sid).html("Rules not found.");
+                    }
                     console.log(response[0]);
-                    console.log(response[0].access_control_list);
+                    console.log("p");
+                    console.log(response[0].access_control_list[0]);
                 }).fail(function(){Materialize.toast("Timeout", 3000);});
             },this);
-            bodyRules = bodyRules + "<hr><h5>New Rule</h5>"
+            bodyRules = bodyRules + "<br><hr><h5>New Rule</h5>"
             + '<div class="input-field" style="padding: 0px 20px; max-width: 240px; margin: 0 auto;"><select id="select_fw" class = "center-align">'
             + '<option value="" disabled selected>Choose your switch</option>';
             swIds.forEach(function(sid){
@@ -253,9 +266,9 @@ $(document).ready(function(){
             +'    <input id="priority" type="text" class="validate">'
             +'    <label for="priority" data-error="wrong" data-success="right">Priority</label>'
             +'</div><br>'
-            +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action">Add rule'
+            +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
             +'    <i class="material-icons right">send</i>'
-            +'</button><br>';
+            +'</button>';
             $("#bodyRulesFw").html(bodyRules);
             $('select').material_select();
             hideLoadingMask();
@@ -268,26 +281,48 @@ $(document).ready(function(){
         showLoadingMask();
         csrftoken = Cookies.get('csrftoken');
         console.log("CLICK ADD RULE");
-        /*$.ajax({
+        console.log($("#select_fw").val());
+        console.log($("#source").val());
+        console.log($("#destination").val());
+        console.log($("#protocol").val());
+        console.log($("#actions").val());
+        console.log($("#priority").val());
+
+        var rule = "{";
+        if($("#source").val() != ""){rule = rule+'"nw_src": "'+$("#source").val()+'",';}
+        if($("#destination").val() != ""){rule = rule+'"nw_dst": "'+$("#destination").val()+'",';}
+        if($("#protocol").val() != ""){rule = rule+'"nw_proto": "'+$("#protocol").val()+'",';}
+        if($("#actions").val() != ""){rule = rule+'"actions": "'+$("#actions").val()+'",';}
+        if($("#priority").val() != ""){rule = rule+'"priority": "'+$("#priority").val()+'",';}
+        rule = rule.slice(0, -1);
+        rule = rule + "}";
+
+        $.ajax({
             url: 'http://'+ip+':8080/firewall/rules/'+$("#select_fw").val(),
             type: 'POST',
-            data: '{"nw_src": "10.0.0.2/32", "nw_dst": "10.0.0.3/32", "nw_proto": "ICMP", "actions": "DENY", "priority": "10"}',
+            crossDomain: true,
+            dataType: "json",
+            data: rule,
+            //data: JSON.stringify({"nw_src": $("#source").val(), "nw_dst": $("#destination").val(), "nw_proto": $("#protocol").val(), "actions": $("#actions").val(), "priority": $("#priority").val()}),
+            //data: JSON.stringify({ "nw_src": "10.0.0.2", "nw_dst": "10.0.0.3", "nw_proto": "ICMP", "actions": "DENY", "priority": "10" }),
             beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                //xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type","application/json");
             },
             success: function(result){
                 hideLoadingMask();
                 console.log("SUCCESS");
                 console.log(result);
+                $('.collapsible').collapsible('close', 0);
                 //Materialize.toast(msgSuccess, 3000);
             },
             error: function(result){
                 hideLoadingMask();
                 console.log("ERROR");
                 console.log(result);
-                //Materialize.toast(msgError, 3000);
+                Materialize.toast("Incorrect data.", 3000);
             }
-        });*/
+        });
     });
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
@@ -313,6 +348,9 @@ $(document).ready(function(){
     }
 
     function showLoadingMask(){
+        var body = document.body, html = document.documentElement;
+        var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+        $("#loading_mask").prop("style","position: absolute; z-index: 1; top: 0; left: 0; width: 100%; height: "+height+"px; background-color: rgba(0,0,0,0.15);");
         $("#loading_mask").removeClass("display-none");
     }
 
