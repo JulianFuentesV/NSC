@@ -134,7 +134,7 @@ $(document).ready(function(){
                         listFw = listFw +
                             '     </span></div>'
                             +'    </li>'
-                            +'    <li><div id="headerRulesFw" class="collapsible-header"><i class="material-icons">view_column</i>Firewall Rules</div>'
+                            +'    <li id="itemRulesFw"><div id="headerRulesFw" class="collapsible-header"><i class="material-icons">view_column</i>Firewall Rules</div>'
                             +'      <div id="bodyRulesFw" class="collapsible-body center-align"><span>'
                             +'      </span></div></li>'
                             +'</ul>';
@@ -226,8 +226,8 @@ $(document).ready(function(){
                         var cont = "";
                         for(i = 0; i < acl[0].rules.length; i++){
                             var rules = acl[0].rules[i];
-                            cont = cont + "<p style='margin: 0 14px; padding: 0; text-align: left;'><a><i class='material-icons' style='color: #FF2222;'>delete</i></a> "+rules.rule_id+". Source: "+rules.nw_src+" - Destination: "+rules.nw_dst+" - Protocol: "+rules.nw_proto
-                            +" - Actions: "+rules.actions+" - Priority: "+rules.priority+" - Type: "+rules.dl_type+"</p>";
+                            cont = cont + "<p style='margin: 0 14px; padding: 0; text-align: left;'>"+rules.rule_id+". Source: "+rules.nw_src+" - Destination: "+rules.nw_dst+" - Protocol: "+rules.nw_proto
+                            +" - Actions: "+rules.actions+" - Priority: "+rules.priority+" - Type: "+rules.dl_type+". <button id='btn_"+sid+"_"+rules.rule_id+"' class='delete_rule' style='background: #FF2200; color: #fff; border: 1px solid #fff; border-radius: 10px;'>Delete</button></p>";
                         }
                         $("#rules_"+sid).html(cont);
                     } else {
@@ -313,8 +313,9 @@ $(document).ready(function(){
                 hideLoadingMask();
                 console.log("SUCCESS");
                 console.log(result);
-                $('.collapsible').collapsible('close', 0);
-                //Materialize.toast(msgSuccess, 3000);
+                //$('.collapsible').collapsible('close',1);
+                closeCollapsible("#itemRulesFw", "#headerRulesFw", "#bodyRulesFw");
+                Materialize.toast("Rule added.", 3000);
             },
             error: function(result){
                 hideLoadingMask();
@@ -323,6 +324,35 @@ $(document).ready(function(){
                 Materialize.toast("Incorrect data.", 3000);
             }
         });
+    });
+
+    $("#information").on("click",".delete_rule", function(){
+        console.log("Delete rule");
+        var btn_id = this.id.split("_");
+        var swid = btn_id[1];
+        var ruleid = btn_id[2];
+        console.log(swid+"|"+ruleid);
+        $.ajax({
+            url: "http://"+ip+":8080/firewall/rules/"+swid,
+            type: "DELETE",
+            data: '{"rule_id": '+ruleid+'}',
+            beforeSend: function(xhr, settings) {
+                //xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function(result){
+                console.log("SUCCESS");
+                console.log(result);
+                //$('.collapsible').collapsible('close', 1);
+                closeCollapsible("#itemRulesFw", "#headerRulesFw", "#bodyRulesFw");
+                Materialize.toast("Rule deleted.", 3000);
+            },
+            error: function(result){
+                console.log("ERROR");
+                console.log(result);
+                Materialize.toast("Error, try again.", 3000);
+            }
+        });
+
     });
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
@@ -345,6 +375,18 @@ $(document).ready(function(){
                 //Materialize.toast(msgError, 3000);
             }
         });
+    }
+
+    function openCollapsible(listItemID, headerID, bodyID){
+        $(listItemID).addClass("active");
+        $(headerID).addClass("active");
+        $(bodyID).prop("style","display: block;");
+    }
+
+    function closeCollapsible(listItemID, headerID, bodyID){
+        $(listItemID).removeClass("active");
+        $(headerID).removeClass("active");
+        $(bodyID).prop("style","display: none;");
     }
 
     function showLoadingMask(){
