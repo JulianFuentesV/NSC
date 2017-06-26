@@ -37,7 +37,7 @@
                     <hr>
                     {% for k, v in dic.items %}
                         <h5 class="center-align">{{ v.name }}</h5>
-                        <img id="{{k}}" src="{% static 'images/link.png' %}" class="item hoverable margin-sm c_move" draggable="true"/>
+                        <img id="{{k}}" src="{% static 'images/link.png' %}" class="item hoverable margin-sm c_move chain" draggable="true"/>
                         <BR>
                         <p>{{ v.description }}</p>
                         <hr>
@@ -100,6 +100,40 @@
                 </form>
             </div>
             <div class="modal-footer">
+            </div>
+        </div>
+
+        <!-- Modal Chains View -->
+        <div id="modal_chainsDetail" class="modal">
+            <div class="modal-content">
+                <h4>Chain Detail</h4>
+                {% load filters_extras %}
+                {% for k, v in dic.items %}
+                <div id="info_{{v.id}}" class="display-none chainDetail">
+                    <h5>Name: {{ v.name }}</h5>
+                    <p>Description: {{ v.description }}</p>
+                    Start ->
+                    {% for key in v.content|dictsort:0 %}
+                        {% with nf=v.content|findDict:key %}
+                            {% if nf == "firewall" %}
+                                Firewall ->
+                            {% endif %}
+                            {% if nf == "loadBalancer" %}
+                                Load Balancer ->
+                            {% endif %}
+                            {% if nf == "router" %}
+                                Router ->
+                            {% else %}
+                                Chain {{nf}} ->
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                    End.
+                </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <a href="" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
 

@@ -174,6 +174,7 @@ $(document).ready(function(){
                 $("#listLb").addClass("col");
                 $("#listLb").addClass(columns);
                 $("#listLb").addClass("offset-"+offset);
+                $('.collapsible').collapsible({accordion: true});
                 break;
             case 'router':
                 console.log("Proxy encontrado");
@@ -193,7 +194,7 @@ $(document).ready(function(){
                             // condicional in_net
                             if(in_net[0].address){
                                 in_net[0].address.forEach(function(ad){
-                                    $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>"+ad.address_id+": "+ad.address+"</p>");
+                                    $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>"+ad.address_id+": "+ad.address+"<button id='btn_"+idsw+"_"+ad.address_id+"' class='delete_data_r' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button></p>");
                                 },this);
                             }else{
                                 $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>Data not found.</p>");
@@ -238,6 +239,7 @@ $(document).ready(function(){
                     $("#listR").addClass("col");
                     $("#listR").addClass(columns);
                     $("#listR").addClass("offset-"+offset);
+                    $('.collapsible').collapsible({accordion: true});
                 }, 7000);
                 break;
             default:
@@ -517,6 +519,34 @@ $(document).ready(function(){
                 //$('.collapsible').collapsible('close', 1);
                 closeCollapsible("#itemRulesFw", "#headerRulesFw", "#bodyRulesFw");
                 Materialize.toast("Rule deleted.", 3000);
+            },
+            error: function(result){
+                console.log("ERROR");
+                console.log(result);
+                Materialize.toast("Error, try again.", 3000);
+            }
+        });
+
+    });
+
+    $("#information").on("click",".delete_data_r", function(){
+        console.log("Delete data r");
+        var btn_id = this.id.split("_");
+        var swid = btn_id[1];
+        var dataid = btn_id[2];
+        console.log(swid+"|"+dataid);
+        $.ajax({
+            url: "http://"+ip+":8080/router/"+swid+"/delete",
+            type: "POST",
+            data: '{"address_id": '+dataid+'}',
+            beforeSend: function(xhr, settings) {
+                //xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function(result){
+                console.log("SUCCESS");
+                console.log(result);
+                //$('.collapsible').collapsible('close', 1);
+                Materialize.toast("Data deleted.", 3000);
             },
             error: function(result){
                 console.log("ERROR");

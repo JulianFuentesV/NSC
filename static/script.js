@@ -36,6 +36,26 @@ $(document).ready(function(){
         $('#modal_config').modal('open');
     });*/
 
+    $("#resources").on("click", ".chain", function(){
+        $('.chainDetail').addClass("display-none");
+        var id = '#info_'+this.id;
+        $(id).removeClass("display-none");
+        showChainDetailModal(this.id);
+    });
+
+    $("#board").on("click", ".chain", function(){
+        $('.chainDetail').addClass("display-none");
+        var id = '#info_'+this.id.split('_')[0];
+        $(id).removeClass("display-none");
+        showChainDetailModal(this.id);
+    });
+
+    function showChainDetailModal(idChain){
+        $('.modal').modal();
+        $('#modal_chainsDetail').modal('open');
+        
+    }
+
     $("#btn_restart").on("click", function(){
         $("#board").html('<br/><h4 class="center-align">Chains Constructor</h4><br/>');
     });
@@ -145,6 +165,7 @@ $(document).ready(function(){
             success: function(result){
                 console.log("SUCCESS");
                 Materialize.toast(msgSuccess, 3000);
+                window.location.replace('/ide/');
             },
             error: function(result){
                 console.log("ERROR");
