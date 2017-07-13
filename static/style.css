@@ -18,6 +18,11 @@ html, body{
     height: auto;
 }
 
+.scroll-y{
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
 .item{
     width: 100px;
     height: 100px;

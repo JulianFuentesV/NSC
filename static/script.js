@@ -26,15 +26,20 @@ $(document).ready(function(){
         }
     });
 
-    /*$("#board").on("click", "#firewall_OnBoard", function(){
-        $("#modal_title").text("Firewall Configuration");
-        $.getJSON("http://"+ip+"/firewall/module/status", function(data){
-            switchID = data[0].switch_id;
-            $("#modal_var_1").text("Switch ID: "+data[0].switch_id+" | Status: "+data[0].status);
-        });
+    $("#board").on("click", "#firewall_OnBoard", function(){
         $('.modal').modal();
-        $('#modal_config').modal('open');
-    });*/
+        $('#modal_firewall_config').modal('open');
+    });
+
+    $("#board").on("click", "#loadBalancer_OnBoard", function(){
+        $('.modal').modal();
+        $('#modal_loadBalancer_config').modal('open');
+    });
+
+    $("#board").on("click", "#router_OnBoard", function(){
+        $('.modal').modal();
+        $('#modal_router_config').modal('open');
+    });
 
     $("#resources").on("click", ".chain", function(){
         $('.chainDetail').addClass("display-none");
@@ -69,8 +74,17 @@ $(document).ready(function(){
         $("#modal_title").text("Configuration");
         var input_ip = $("#input_ip");
         if (!input_ip.length) {
-            $("#modal_config_body").append('<input id="input_ip" type="text" name="ip" placeholder="Controller IP">');
+            $("#modal_config_body").append('<div class="input-field inline"><input id="input_ip" type="text" name="ip" placeholder="Controller IP"></div>');
         }
+        var topo_select = $("#topo_select");
+        if(!topo_select.length) {
+            $("#modal_config_body_sec").append('<div class="input-field inline"><select id="topo_select"><option value="Tree" selected>Tree 2/2</option>'/*<option value="Linear">Linear</option>*/+'</select><label>Topology type</label></div>');
+            $('select').material_select();
+        }
+        /*var topo_params = $("#topo_params");
+        if(!topo_params.length) {
+            $("#modal_config_body_sec_2").append('<div class="input-field inline"><input id="topo_param1" type="text" name="topo_param1" placeholder="First Topology Parameter"></div><div class="input-field inline"><input id="topo_param2" type="text" name="topo_param2" placeholder="Second Topology Parameter"></div>');
+        }*/
         $('.modal').modal();
         $('#modal_config').modal('open');
     });

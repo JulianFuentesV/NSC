@@ -13,7 +13,16 @@
         <div class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper light-blue darken-4 padding-left-right-sm">
-                    <a href="{% url 'index' %}" class="brand-logo white-text">Network Service Chaining | <span style="font-size: 12px;">IP: </span><span id="ip" style="font-size: 12px;">undefined yet.</span></a>
+                    <a href="{% url 'index' %}" class="brand-logo white-text">Network Service Chaining | 
+                        <span style="font-size: 12px;">IP: </span>
+                        <span id="ip" style="font-size: 12px;">undefined yet.</span>
+                        <span style="font-size: 12px;"> | Topology: </span>
+                        <span id="topo" style="font-size: 12px;">Tree</span>
+                        <span style="font-size: 12px;"> </span>
+                        <span id="topo_p1" style="font-size: 12px;">2</span><!--Depth-->
+                        <span style="font-size: 12px;">/</span>
+                        <span id="topo_p2" style="font-size: 12px;">2</span><!--Fanout-->
+                    </a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
                         <li id="btn_config"><a>Configuration</a></li>
                         <li id="btn_save"><a>Save</a></li>
@@ -54,12 +63,69 @@
         </div>
         <div id="btn_run" class="fixed-action-btn"><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">play_arrow</i></a></div>
 
-        <!--MODAL CONFIG-->
-        <div id="modal_config" class="modal bottom-sheet">
+        <!-- MODAL FIREWALL CONFIG -->
+        <div id="modal_firewall_config" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>Firewall Configuration</h4>
+                <div class="row" style="border-bottom: 1px solid grey;">
+                    <div class="col s6" style="border-right: 1px solid grey;">
+                        <h6 class="center-align">New Rules</h6>
+                    </div>
+                    <div class="col s6">
+                        <h6 class="center-align">Confirmed Rules</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6">
+                        <p class="center-align">Switch 000000000000001</p>
+                        <div class="switch center-align">
+                            <label>
+                            Off
+                            <input type="checkbox">
+                            <span class="lever"></span>
+                            On
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col s6 center-align">
+                        <p>Default configuration.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
+            </div>
+        </div>
+
+        <!-- MODAL LOAD BALANCER CONFIG -->
+        <div id="modal_loadBalancer_config" class="modal modal-fixed-footer">
+            <div class="modal-content">
+            <h4>Load Balancer Configuration</h4>
+            <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
+            </div>
+        </div>
+
+        <!-- MODAL ROUTER CONFIG -->
+        <div id="modal_router_config" class="modal modal-fixed-footer">
+            <div class="modal-content">
+            <h4>Router Configuration</h4>
+            <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
+            </div>
+        </div>
+
+        <!--MODAL IP & TOPOLOGY CONFIG-->
+        <div id="modal_config" class="modal modal-fixed-footer bottom-sheet">
             <div id="modal_body" class="modal-content">
                 <h4 id="modal_title"></h4>
-                <h5 id="modal_var_1"></h5>
-                <div id="modal_config_body"></div>
+                <div id="modal_config_body" class="display-inline"></div>
+                <div id="modal_config_body_sec" class="display-inline"></div>
+                <div id="modal_config_body_sec_2" class="display-inline"></div>
             </div>
             <div class="modal-footer">
               <button id="btn_saveConfig" class=" modal-action modal-close waves-effect waves-green btn-flat">Save</a>
@@ -103,7 +169,7 @@
             </div>
         </div>
 
-        <!-- Modal Chains View -->
+        <!-- MODAL CHAINS VIEWER -->
         <div id="modal_chainsDetail" class="modal">
             <div class="modal-content">
                 <h4>Chain Detail</h4>
@@ -133,7 +199,7 @@
                 {% endfor %}
             </div>
             <div class="modal-footer">
-                <a href="" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                <a role="button" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
 
