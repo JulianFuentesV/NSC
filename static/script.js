@@ -26,6 +26,9 @@ $(document).ready(function(){
         }
     });
 
+    // Setea los modals de configuracion de las NF a partir de la topologia elegida
+    setModalsConfig();
+
     $("#board").on("click", "#firewall_OnBoard", function(){
         $('.modal').modal();
         $('#modal_firewall_config').modal('open');
@@ -166,6 +169,37 @@ $(document).ready(function(){
             }
         });
     });*/
+
+    function setModalsConfig(){
+        var topo = $("#topo_type").text();
+        var topo_p1 = parseInt($("#topo_p1").text());
+        var topo_p2 = parseInt($("#topo_p2").text());
+        var s = 0; // total switchs
+        var h = 0; // total hosts
+        //Case 1: If topo == tree => topo_p1: depth & topo_p2: fanout
+        if(topo == "Tree"){
+            for(var n = 0; n < topo_p1; n++){
+                s += Math.pow(topo_p2,n);
+            }
+            h = Math.pow(topo_p2,topo_p1);
+            console.log("# Switch: "+s);
+            console.log("# Host: "+h);
+        }
+
+        //Config FIREWALL Modal
+        $("#newRulesFw").text("");
+        for(var e = 1; e <= s; e++){
+            $("#newRulesFw").append('<p class="center-align">Switch '+e+'</p>'
+            + '<div class="switch center-align">'
+            + '<label>'
+            + 'Off'
+            + '<input type="checkbox">'
+            + '<span class="lever"></span>'
+            + 'On'
+            + '</label>'
+            + '</div>');
+        }
+    }
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
         csrftoken = Cookies.get('csrftoken');
