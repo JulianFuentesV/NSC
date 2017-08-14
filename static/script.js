@@ -26,20 +26,23 @@ $(document).ready(function(){
         }
     });
 
-    // Setea los modals de configuracion de las NF a partir de la topologia elegida
-    setModalsConfig();
-
     $("#board").on("click", "#firewall_OnBoard", function(){
+        // Setea los modals de configuracion de las NF a partir de la topologia elegida
+        setModalsConfig();
         $('.modal').modal();
         $('#modal_firewall_config').modal('open');
     });
 
     $("#board").on("click", "#loadBalancer_OnBoard", function(){
+        // Setea los modals de configuracion de las NF a partir de la topologia elegida
+        setModalsConfig();
         $('.modal').modal();
         $('#modal_loadBalancer_config').modal('open');
     });
 
     $("#board").on("click", "#router_OnBoard", function(){
+        // Setea los modals de configuracion de las NF a partir de la topologia elegida
+        setModalsConfig();
         $('.modal').modal();
         $('#modal_router_config').modal('open');
     });
@@ -81,7 +84,10 @@ $(document).ready(function(){
         }
         var topo_select = $("#topo_select");
         if(!topo_select.length) {
-            $("#modal_config_body_sec").append('<div class="input-field inline"><select id="topo_select"><option value="Tree" selected>Tree 2/2</option>'/*<option value="Linear">Linear</option>*/+'</select><label>Topology type</label></div>');
+            $("#modal_config_body_sec").append('<div class="input-field inline"><select id="topo_select">'
+            +'<option value="Tree2/2" selected>Tree 2/2</option>'
+            +'<option value="Tree4/2">Tree 4/2</option>'
+            +'</select><label>Topology type</label></div>');
             $('select').material_select();
         }
         /*var topo_params = $("#topo_params");
@@ -95,6 +101,17 @@ $(document).ready(function(){
     $("#btn_saveConfig").on("click", function(){
         console.log("text: "+$("#input_ip").val());
         $("#ip").text($("#input_ip").val());
+        var topo = $("#topo_select").val();
+        if(topo == "Tree2/2"){
+            $("#topo_type").text("Tree");
+            $("#topo_p1").text("2");
+            $("#topo_p2").text("2");
+        }
+        if(topo == "Tree4/2"){
+            $("#topo_type").text("Tree");
+            $("#topo_p1").text("4");
+            $("#topo_p2").text("2");
+        }
     });
 
     $("#btn_save").on("click", function(){
@@ -132,6 +149,8 @@ $(document).ready(function(){
     });
 
     $("#btn_run").on("click", function(){
+        var topo_p1 = $("#topo_p1").text();
+        var topo_p2 = $("#topo_p2").text();
         ip = $("#ip").text();
         console.log("IP: "+ip);
         items = $("#board").find(".item");
@@ -147,7 +166,7 @@ $(document).ready(function(){
             //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
             //$.get('http://'+ip+'/launcher?f='+ids);
             console.log("get pass");
-            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids);
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+topo_p1+'&topop2='+topo_p2);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }
@@ -170,6 +189,32 @@ $(document).ready(function(){
         });
     });*/
 
+    ruleCount = 1;
+
+    $("#newRulesFw").on("click", "#btn_addrule", function(){
+        var source = $("#source").val();
+        var destination = $("#destination").val();
+        var protocol = $("#protocol").val();
+        var actions = $("#actions").val();
+        var priority = $("#priority").val();
+
+        if($("#confirmedFw").find('#default').length > 0 || $("#confirmedFw").html() == ""){
+            $("#confirmedFw").html("");
+            ruleCount = 1;
+        }
+        $("#confirmedFw").append('<p id="ruleFw_'+ruleCount+'">'+ruleCount+'. '
+        +'Source: '+source+', Destination: '+destination+', '
+        +'Protocol: '+protocol+', Action: '+actions+', '
+        +'Priority: '+priority
+        +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button></p>");
+        ruleCount += 1;
+    });
+
+    $("#confirmedFw").on("click", ".del_confirmed_fw", function(){
+        var idConfirmedRule = this.id.split('_')[1];
+        $("#ruleFw_"+idConfirmedRule).remove();
+    });
+
     function setModalsConfig(){
         var topo = $("#topo_type").text();
         var topo_p1 = parseInt($("#topo_p1").text());
@@ -188,6 +233,37 @@ $(document).ready(function(){
 
         //Config FIREWALL Modal
         $("#newRulesFw").text("");
+        var content = '<div class="center-align">'
+        +'<div class="input-field inline"><select>';
+        for(var e = 1; e <= s; e++){
+            content += '<option value="'+e+'">Switch '+e+'</option>';
+        }
+        content += '</select></div>'
+        +'<div class="input-field inline">'
+        +'    <input id="source" type="text" class="validate" required>'
+        +'    <label for="source" data-error="wrong" data-success="right">Source</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="destination" type="text" class="validate" required>'
+        +'    <label for="destination" data-error="wrong" data-success="right">Destination</label>'
+        +'</div><br>'
+        +'<div class="input-field inline">'
+        +'    <input id="protocol" type="text" class="validate">'
+        +'    <label for="protocol" data-error="wrong" data-success="right">Protocol</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="actions" type="text" class="validate">'
+        +'    <label for="actions" data-error="wrong" data-success="right">Action</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="priority" type="text" class="validate">'
+        +'    <label for="priority" data-error="wrong" data-success="right">Priority</label>'
+        +'</div><br>'
+        +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
+        +'    <i class="material-icons right">send</i>'
+        +'</button></div>';
+        $("#newRulesFw").append(content);
+        $("#newRulesFw").append('<hr>');
         for(var e = 1; e <= s; e++){
             $("#newRulesFw").append('<p class="center-align">Switch '+e+'</p>'
             + '<div class="switch center-align">'
