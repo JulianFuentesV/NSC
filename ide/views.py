@@ -67,12 +67,12 @@ def run(request):
 	return HttpResponse(status=200)
 
 def status(request):
-	ip = request.GET.get('ip','0.0.0.0')
+	ip = request.GET.get('ip','127.0.0.1:8081')
+	topo_p1 = request.GET.get('topop1','0')
+	topo_p2 = request.GET.get('topop2','0')
 	funcs = request.GET.get('funcs','')
 	funcs = funcs.split(',')
 	print(funcs)
-	tp1 = request.GET.get('tp1')
-	tp2 = request.GET.get('tp2')
 	fs = ""
 	#switchID = request.GET.get('id', '0000')
 	for i in funcs:
@@ -102,7 +102,7 @@ def status(request):
 			fs = fs + i
 	print("fs:")
 	print(fs)
-	url = 'http://'+ip+'/launcher?f='+fs+'&tp1='+tp1+'&tp2='+tp2
+	url = 'http://'+ip+'/launcher?f='+fs+'&tp1='+topo_p1+'&tp2='+topo_p2
 	print(url)
 	#urllib.request.urlopen(url).read()
 	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url})

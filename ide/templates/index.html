@@ -78,8 +78,8 @@
                 <div class="row">
                     <div id="newRulesFw" class="col s6">
                     </div>
-                    <div class="col s6 center-align">
-                        <p>Default configuration.</p>
+                    <div id="confirmedFw" class="col s6 center-align">
+                        <p id="default">Default configuration.</p>
                     </div>
                 </div>
             </div>
@@ -188,11 +188,9 @@
                         {% with nf=v.content|findDict:key %}
                             {% if nf == "firewall" %}
                                 Firewall ->
-                            {% endif %}
-                            {% if nf == "loadBalancer" %}
+                            {% elif nf == "loadBalancer" %}
                                 Load Balancer ->
-                            {% endif %}
-                            {% if nf == "router" %}
+                            {% elif nf == "router" %}
                                 Router ->
                             {% else %}
                                 Chain {{nf}} ->
