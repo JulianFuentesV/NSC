@@ -71,6 +71,8 @@ def status(request):
 	funcs = request.GET.get('funcs','')
 	funcs = funcs.split(',')
 	print(funcs)
+	tp1 = request.GET.get('tp1')
+	tp2 = request.GET.get('tp2')
 	fs = ""
 	#switchID = request.GET.get('id', '0000')
 	for i in funcs:
@@ -100,7 +102,7 @@ def status(request):
 			fs = fs + i
 	print("fs:")
 	print(fs)
-	url = 'http://'+ip+'/launcher?f='+fs
+	url = 'http://'+ip+'/launcher?f='+fs+'&tp1='+tp1+'&tp2='+tp2
 	print(url)
 	#urllib.request.urlopen(url).read()
 	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url})

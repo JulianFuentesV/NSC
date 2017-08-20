@@ -147,7 +147,9 @@ $(document).ready(function(){
             //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
             //$.get('http://'+ip+'/launcher?f='+ids);
             console.log("get pass");
-            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids);
+            var tp1 = $("#topo_p1").text();
+            var tp2 = $("#topo_p2").text();
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&tp1='+tp1+'&tp2='+tp2);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }
@@ -189,16 +191,87 @@ $(document).ready(function(){
         //Config FIREWALL Modal
         $("#newRulesFw").text("");
         for(var e = 1; e <= s; e++){
-            $("#newRulesFw").append('<p class="center-align">Switch '+e+'</p>'
-            + '<div class="switch center-align">'
-            + '<label>'
-            + 'Off'
-            + '<input type="checkbox">'
-            + '<span class="lever"></span>'
-            + 'On'
-            + '</label>'
+            $("#newRulesFw").append('<div class="col s6 display-inline">'
+            + ' <p class="center-align">Switch '+e+'</p>'
+            + ' <div class="switch center-align">'
+            + '     <label>'
+            + '         Off'
+            + '         <input id="'+e+'" type="checkbox">'
+            + '         <span class="lever"></span>'
+            + '         On'
+            + '     </label>'
+            + ' </div>'
             + '</div>');
         }
+        var addRulesFwHTML = '<div class="col s12"><br><hr><h6 class="center-align">Add rule</h6><hr><br></div>'
+            +'<div class="input-field col s12">'
+            +'<select>'
+            +'  <option value="" disabled selected>Choose your option</option>';
+        for(var e = 1; e <= s; e++){
+            addRulesFwHTML += '<option value="'+e+'">Switch '+e+'</option>';
+        }
+        addRulesFwHTML +=
+            '</select>'
+            +'<label>Choose your switch</label>'
+            +"</div>";
+        addRulesFwHTML += '<div class="center-align">'
+        +'<div class="input-field inline">'
+        +'    <input id="source" type="text" class="validate" required>'
+        +'    <label for="source" data-error="wrong" data-success="right">Source</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="destination" type="text" class="validate" required>'
+        +'    <label for="destination" data-error="wrong" data-success="right">Destination</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="protocol" type="text" class="validate">'
+        +'    <label for="protocol" data-error="wrong" data-success="right">Protocol</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="actions" type="text" class="validate">'
+        +'    <label for="actions" data-error="wrong" data-success="right">Action</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="priority" type="text" class="validate">'
+        +'    <label for="priority" data-error="wrong" data-success="right">Priority</label>'
+        +'</div><br>'
+        +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
+        +'    <i class="material-icons right">send</i>'
+        +'</button></div>';
+        $("#newRulesFw").append(addRulesFwHTML);
+        $('select').material_select();
+
+        //Config ROUTER Modal
+        $("#newRulesR").text("");
+        var addRulesRHTML = ''
+            +'<div class="input-field col s12">'
+            +'<select>'
+            +'  <option value="" disabled selected>Choose your option</option>';
+        for(var e = 1; e <= s; e++){
+            addRulesRHTML += '<option value="'+e+'">Switch '+e+'</option>';
+        }
+        addRulesRHTML +=
+            '</select>'
+            +'<label>Choose your switch</label>'
+            +"</div>";
+        addRulesRHTML += '<div class="center-align">'
+        +'<div class="input-field inline">'
+        +'    <input id="address" type="text" class="validate" required>'
+        +'    <label for="address" data-error="wrong" data-success="right">Address</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="destination" type="text" class="validate" required>'
+        +'    <label for="destination" data-error="wrong" data-success="right">Destination</label>'
+        +'</div>'
+        +'<div class="input-field inline">'
+        +'    <input id="gateway" type="text" class="validate">'
+        +'    <label for="gateway" data-error="wrong" data-success="right">Gateway</label>'
+        +'</div>'
+        +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
+        +'    <i class="material-icons right">send</i>'
+        +'</button></div>';
+        $("#newRulesR").append(addRulesRHTML);
+        $('select').material_select();
     }
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
