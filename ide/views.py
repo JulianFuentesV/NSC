@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Chain
+from .models import Chain, Configuration, Execution
 from django.http import HttpResponse
 import json
 import urllib.request
@@ -105,4 +105,6 @@ def status(request):
 	url = 'http://'+ip+'/launcher?f='+fs+'&tp1='+topo_p1+'&tp2='+topo_p2
 	print(url)
 	#urllib.request.urlopen(url).read()
+	e = Execution(nfs = fs, ip = ip, state = 1)
+	e.save()
 	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url})

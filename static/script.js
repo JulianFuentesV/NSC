@@ -168,7 +168,7 @@ $(document).ready(function(){
             console.log("get pass");
             var tp1 = $("#topo_p1").text();
             var tp2 = $("#topo_p2").text();
-            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&tp1='+tp1+'&tp2='+tp2);
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }
