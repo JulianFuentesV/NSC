@@ -212,6 +212,24 @@ $(document).ready(function(){
         ruleCount += 1;
     });
 
+    $("#newRulesFw").on("change", ".checkFw", function(){
+        if($("#confirmedFw").find('#default').length > 0 || $("#confirmedFw").html() == ""){
+            $("#confirmedFw").html("");
+            ruleCount = 1;
+        }
+        var state = "Off";
+        if($("#"+this.id).is(":checked") == true){
+            state = "On";
+        }
+        $("#confirmedFw").append('<p id="ruleFw_'+ruleCount+'">'+ruleCount+'. '
+        +'Switch '+this.id.split('_')[1]+': '+state
+        +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button>"
+        +'<span class="rcFw">{"switch":"'+this.id.split('_')[1]+'","state":"'+state+'"}</span>'
+        +"</p>");
+        ruleCount += 1;
+        console.log($("#"+this.id).is(":checked"));
+    });
+
     $("#confirmedFw").on("click", ".del_confirmed_fw", function(){
         var idConfirmedRule = this.id.split('_')[1];
         $("#ruleFw_"+idConfirmedRule).remove();
@@ -235,44 +253,13 @@ $(document).ready(function(){
 
         //Config FIREWALL Modal
         $("#newRulesFw").text("");
-        var content = '<div class="center-align">'
-        +'<div class="input-field inline"><select>';
-        for(var e = 1; e <= s; e++){
-            content += '<option value="'+e+'">Switch '+e+'</option>';
-        }
-        content += '</select></div>'
-        +'<div class="input-field inline">'
-        +'    <input id="source" type="text" class="validate" required>'
-        +'    <label for="source" data-error="wrong" data-success="right">Source</label>'
-        +'</div>'
-        +'<div class="input-field inline">'
-        +'    <input id="destination" type="text" class="validate" required>'
-        +'    <label for="destination" data-error="wrong" data-success="right">Destination</label>'
-        +'</div><br>'
-        +'<div class="input-field inline">'
-        +'    <input id="protocol" type="text" class="validate">'
-        +'    <label for="protocol" data-error="wrong" data-success="right">Protocol</label>'
-        +'</div>'
-        +'<div class="input-field inline">'
-        +'    <input id="actions" type="text" class="validate">'
-        +'    <label for="actions" data-error="wrong" data-success="right">Action</label>'
-        +'</div>'
-        +'<div class="input-field inline">'
-        +'    <input id="priority" type="text" class="validate">'
-        +'    <label for="priority" data-error="wrong" data-success="right">Priority</label>'
-        +'</div><br>'
-        +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
-        +'    <i class="material-icons right">send</i>'
-        +'</button></div>';
-        $("#newRulesFw").append(content);
-        $("#newRulesFw").append('<hr>');
         for(var e = 1; e <= s; e++){
             $("#newRulesFw").append('<div class="col s6 display-inline">'
             + ' <p class="center-align">Switch '+e+'</p>'
             + ' <div class="switch center-align">'
             + '     <label>'
             + '         Off'
-            + '         <input id="'+e+'" type="checkbox">'
+            + '         <input id="checkFw_'+e+'" type="checkbox" class="checkFw">'
             + '         <span class="lever"></span>'
             + '         On'
             + '     </label>'

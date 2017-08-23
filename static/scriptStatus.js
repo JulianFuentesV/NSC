@@ -558,8 +558,9 @@ $(document).ready(function(){
     });
 
     $("#btn_stop").on("click", function(){
-        $.get("http://"+ip+":8081/stop");
-        window.location.replace('/ide/');
+        $.get("http://"+ip+":8081/stop", function(response){
+            window.location.replace('/ide/');
+        });
     });
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
