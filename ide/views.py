@@ -70,6 +70,7 @@ def status(request):
 	ip = request.GET.get('ip','127.0.0.1:8081')
 	topo_p1 = request.GET.get('topop1','0')
 	topo_p2 = request.GET.get('topop2','0')
+	rfw = request.GET.get('rfw','{}')
 	funcs = request.GET.get('funcs','')
 	funcs = funcs.split(',')
 	print(funcs)
@@ -107,4 +108,4 @@ def status(request):
 	#urllib.request.urlopen(url).read()
 	e = Execution(nfs = fs, ip = ip, state = 1)
 	e.save()
-	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url})
+	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'rfw':rfw})

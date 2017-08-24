@@ -165,10 +165,16 @@ $(document).ready(function(){
             }
             //ajaxRequest('/ide/run/','POST', {"chain[]": ids, "ip": ip}, "Chain executed!", "Error executing chain..");
             //$.get('http://'+ip+'/launcher?f='+ids);
-            console.log("get pass");
             var tp1 = $("#topo_p1").text();
             var tp2 = $("#topo_p2").text();
-            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2);
+            var rulesFw = $('#confirmedFw').find('.rcFw');
+            var rFw = "[";
+            for(var r=0; r<rulesFw.length; r++){
+                rFw += rulesFw[r].innerHTML+",";
+            }
+            rFw = rFw.slice(0,-1);
+            rFw += "]";
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2+'&rfw='+rFw);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }
@@ -194,6 +200,7 @@ $(document).ready(function(){
     ruleCount = 1;
 
     $("#newRulesFw").on("click", "#btn_addrule", function(){
+        var numSwitch = $("#sw_num").val();
         var source = $("#source").val();
         var destination = $("#destination").val();
         var protocol = $("#protocol").val();
@@ -205,10 +212,14 @@ $(document).ready(function(){
             ruleCount = 1;
         }
         $("#confirmedFw").append('<p id="ruleFw_'+ruleCount+'">'+ruleCount+'. '
+        +'[Switch '+numSwitch+'] '
         +'Source: '+source+', Destination: '+destination+', '
         +'Protocol: '+protocol+', Action: '+actions+', '
         +'Priority: '+priority
-        +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button></p>");
+        +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button>"
+        +'<span hidden class="rcFw">{"sw":"'+numSwitch+'","s":"'+source+'","d":"'+destination+'",'
+        +'"p":"'+protocol+'","a":"'+actions+'","pri":"'+priority+'"}</span>'
+        +"</p>");
         ruleCount += 1;
     });
 
@@ -224,7 +235,7 @@ $(document).ready(function(){
         $("#confirmedFw").append('<p id="ruleFw_'+ruleCount+'">'+ruleCount+'. '
         +'Switch '+this.id.split('_')[1]+': '+state
         +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button>"
-        +'<span class="rcFw">{"switch":"'+this.id.split('_')[1]+'","state":"'+state+'"}</span>'
+        +'<span hidden class="rcFw">{"switch":"'+this.id.split('_')[1]+'","state":"'+state+'"}</span>'
         +"</p>");
         ruleCount += 1;
         console.log($("#"+this.id).is(":checked"));
@@ -268,7 +279,7 @@ $(document).ready(function(){
         }
         var addRulesFwHTML = '<div class="col s12"><br><hr><h6 class="center-align">Add rule</h6><hr><br></div>'
             +'<div class="input-field col s12">'
-            +'<select>'
+            +'<select id="sw_num">'
             +'  <option value="" disabled selected>Choose your option</option>';
         for(var e = 1; e <= s; e++){
             addRulesFwHTML += '<option value="'+e+'">Switch '+e+'</option>';

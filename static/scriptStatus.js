@@ -27,6 +27,20 @@ $(document).ready(function(){
 
     console.log("total items: "+totalItems);
 
+    if(activatedIds.indexOf('firewall') != -1){
+        var flag = true;
+        while(flag){
+            setTimeout(function(){
+                $.ajax({
+                    url: "",
+                    success: function(response){ flag = false; },
+                    timeout: 1000
+                });
+            },1000);
+        }
+        console.log("YAAAAAAAAAAAA!!!");
+    }
+
     var columns = "";
     var offset = "s0";
 
