@@ -27,7 +27,7 @@ $(document).ready(function(){
 
     console.log("total items: "+totalItems);
 
-    if(activatedIds.indexOf('firewall') != -1){
+    /*if(activatedIds.indexOf('firewall') != -1){
         var flag = true;
         while(flag){
             setTimeout(function(){
@@ -39,7 +39,7 @@ $(document).ready(function(){
             },1000);
         }
         console.log("YAAAAAAAAAAAA!!!");
-    }
+    }*/
 
     var columns = "";
     var offset = "s0";
@@ -572,8 +572,23 @@ $(document).ready(function(){
     });
 
     $("#btn_stop").on("click", function(){
+        showLoadingMask();
         $.get("http://"+ip+":8081/stop", function(response){
-            window.location.replace('/ide/');
+            if(response == "stopped"){
+                var idExec = $("#idExec").text();
+                $.get("/ide/offExec?idExec="+idExec, function(response){
+                    if(response == "off"){
+                        hideLoadingMask();
+                        window.location.replace('/ide/');
+                    } else {
+                        hideLoadingMask();
+                        Materialize.toast("Error[2], try again.", 3000); //state dont changed in DB
+                    }
+                });
+            }else{
+                hideLoadingMask();
+                Materialize.toast("Error[1], try again.", 3000); //not stopped
+            }
         });
     });
 

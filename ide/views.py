@@ -33,6 +33,9 @@ def index(request):
 		data = {"dic":dic, "size":len(dic)}
 	else:
 		data.clear()
+	execution = Execution.objects.all()
+	runing = list(execution.filter(state=1))
+	data['run'] = runing
 	return render(request, 'index.html', data)
 
 def saveChain(request):
@@ -67,6 +70,7 @@ def run(request):
 	return HttpResponse(status=200)
 
 def status(request):
+	currentURL = request.build_absolute_uri(request.get_full_path())
 	ip = request.GET.get('ip','127.0.0.1:8081')
 	topo_p1 = request.GET.get('topop1','0')
 	topo_p2 = request.GET.get('topop2','0')
@@ -106,6 +110,16 @@ def status(request):
 	url = 'http://'+ip+'/launcher?f='+fs+'&tp1='+topo_p1+'&tp2='+topo_p2
 	print(url)
 	#urllib.request.urlopen(url).read()
-	e = Execution(nfs = fs, ip = ip, state = 1)
+	e = Execution(nfs = fs, ip = ip, state = 1, url=currentURL)
 	e.save()
-	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'rfw':rfw})
+	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw})
+
+def setExecutionStateOff(request):
+	id = request.GET.get('idExec','0')
+	if(id != '0'):
+		exec = Execution.objects.get(id=id)
+		exec.state = 0
+		exec.save()
+		return HttpResponse("off")
+	else:
+		return HttpResponse("error")

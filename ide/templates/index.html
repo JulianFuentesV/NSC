@@ -28,6 +28,8 @@
                         <li id="btn_save"><a>Save</a></li>
                         <li id="btn_delete"><a>Delete</a></li>
                         <li id="btn_restart"><a>Restart</a></li>
+                        <li> | </li>
+                        <li id="btn_execution"><a>CoE</a></li>
                         <!--<li><a href="{% url 'index' %}">Restart</a></li>-->
                     </ul>
                 </div>
@@ -203,6 +205,31 @@
             </div>
             <div class="modal-footer">
                 <a role="button" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+            </div>
+        </div>
+
+        <!-- MODAL EXECUTION VIEWER -->
+        <div id="modal_execution" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>Chains on Execution</h4>
+                <table class="highlight centered">
+                    <thead>
+                        <tr class="row">
+                            <th>IP</th>
+                            <th>Chain</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in run %}
+                            <tr class="row">
+                                <td><p>{{ r.ip }}</p></td>
+                                <td style="max-width: 120px; word-wrap: break-word;"><p>{{ r.nfs }}</p></td>
+                                <td><a class="waves-effect waves-light" href="{{ r.url }}">Show</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 

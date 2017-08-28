@@ -76,6 +76,11 @@ $(document).ready(function(){
         $('#modal_delete').modal('open');
     });
 
+    $("#btn_execution").on("click", function(){
+        $('.modal').modal();
+        $('#modal_execution').modal('open');
+    });
+
     $("#btn_config").on("click", function(){
         $("#modal_title").text("Configuration");
         var input_ip = $("#input_ip");
@@ -172,7 +177,9 @@ $(document).ready(function(){
             for(var r=0; r<rulesFw.length; r++){
                 rFw += rulesFw[r].innerHTML+",";
             }
-            rFw = rFw.slice(0,-1);
+            if(rFw != "["){
+                rFw = rFw.slice(0,-1);
+            }
             rFw += "]";
             window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2+'&rfw='+rFw);
         } else {

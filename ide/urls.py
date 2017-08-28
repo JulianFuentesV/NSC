@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^chain/save/$', views.saveChain, name='saveChain'),
     url(r'^chain/delete/$', views.deleteChain, name='deleteChain'),
     url(r'^run/$', views.run, name='run'),
+    url(r'^offExec/$', views.setExecutionStateOff, name="offExec"),
 ]

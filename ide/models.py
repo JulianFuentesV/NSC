@@ -17,3 +17,4 @@ class Execution(models.Model):
 	nfs = models.CharField(max_length=500)
 	ip = models.CharField(max_length=50)
 	state = models.IntegerField(default=0)
+	url = models.CharField(max_length=200)
