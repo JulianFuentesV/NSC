@@ -1,45 +1,31 @@
 $(document).ready(function(){
 
     var url = $("#url").text();
-    console.log("url: "+url);
+    //console.log("url: "+url);
     $.get(url);
 
     var ip = $("#ip").text();
     ip = ip.split(":")[0];
-    console.log("IP: "+ip);
+    //console.log("IP: "+ip);
     
     var activatedItems = $("#activatedItems").find(".itemSelected");
-    console.log("Activated elements:");
-    console.log(activatedItems);
+    //console.log("Activated elements:");
+    //console.log(activatedItems);
 
     totalItems = 0;
 
     var activatedIds = [];
     if(activatedItems[totalItems]){
         while(activatedItems[totalItems]){
-            console.log("Element: "+totalItems);
-            console.log(activatedItems[totalItems]);
-            console.log("Id elemento activado: "+activatedItems[totalItems].id);
+            //console.log("Element: "+totalItems);
+            //console.log(activatedItems[totalItems]);
+            //console.log("Id elemento activado: "+activatedItems[totalItems].id);
             activatedIds[totalItems] = ""+activatedItems[totalItems].id;
             totalItems++;
         }
     }
 
-    console.log("total items: "+totalItems);
-
-    /*if(activatedIds.indexOf('firewall') != -1){
-        var flag = true;
-        while(flag){
-            setTimeout(function(){
-                $.ajax({
-                    url: "",
-                    success: function(response){ flag = false; },
-                    timeout: 1000
-                });
-            },1000);
-        }
-        console.log("YAAAAAAAAAAAA!!!");
-    }*/
+    //console.log("total items: "+totalItems);
 
     var columns = "";
     var offset = "s0";
@@ -66,6 +52,7 @@ $(document).ready(function(){
 
     $("#information").html("");
     showLoadingMask();
+    controllerChecker();
     /*$("#information").html(
     '<div class="center-align" style="margin: auto;">'
     +'    <div class="preloader-wrapper big active">'
@@ -108,8 +95,8 @@ $(document).ready(function(){
     +'    </div>'
     +'</div>');*/
 
-    console.log("activatedIds");
-    console.log(activatedIds);
+    //console.log("activatedIds");
+    //console.log(activatedIds);
 
     var swIds = []; //usado por el firewall
     var idsSw = []; //usado por el proxy
@@ -117,7 +104,7 @@ $(document).ready(function(){
     for(i = 0; i<totalItems; i++){
         switch(activatedIds[i]){
             case 'firewall':
-                console.log("firewall encontrado");
+                //console.log("firewall encontrado");
                 url = "http://"+ip+":8080/firewall/module/status";
                 setTimeout(function(){
                     $.getJSON("http://"+ip+":8080/firewall/module/status", function(data){
@@ -165,7 +152,7 @@ $(document).ready(function(){
                 }, 7000);
                 break;
             case 'loadBalancer':
-                console.log("Load balancer encontrado");
+                //console.log("Load balancer encontrado");
                 //hideLoadingMask();
                 var listLb = '<ul id="listLb" class="collapsible popout" data-collapsible="accordion">'
                             +'  <li id="itemLb">'
@@ -191,7 +178,7 @@ $(document).ready(function(){
                 $('.collapsible').collapsible({accordion: true});
                 break;
             case 'router':
-                console.log("Proxy encontrado");
+                //console.log("Proxy encontrado");
                 setTimeout(function(){
                     $.getJSON("http://"+ip+":8080/router/all",function(response){
                         hideLoadingMask();
@@ -257,7 +244,7 @@ $(document).ready(function(){
                 }, 7000);
                 break;
             default:
-                console.log(activatedIds[i]+" encontrado");
+                //console.log(activatedIds[i]+" encontrado");
                 break;
         }
     }
@@ -405,8 +392,8 @@ $(document).ready(function(){
             swIds.forEach(function(sid){
                 bodyRules = bodyRules + "<p style='margin: 14px; padding: 0;'><b>Switch "+sid+"</b></p><div id='rules_"+sid+"'></div>";
                 $.getJSON("http://"+ip+":8080/firewall/rules/"+sid, function(response){
-                    console.log("response rules");
-                    console.log(response);
+                    //console.log("response rules");
+                    //console.log(response);
                     var acl = response[0].access_control_list;
                     if(acl[0]){
                         $("#rules_"+sid).html();
@@ -421,9 +408,9 @@ $(document).ready(function(){
                     } else {
                         $("#rules_"+sid).html("Rules not found.");
                     }
-                    console.log(response[0]);
-                    console.log("p");
-                    console.log(response[0].access_control_list[0]);
+                    //console.log(response[0]);
+                    //console.log("p");
+                    //console.log(response[0].access_control_list[0]);
                 }).fail(function(){Materialize.toast("Timeout", 3000);});
             },this);
             bodyRules = bodyRules + "<br><hr><h5>New Rule</h5>"
@@ -468,13 +455,13 @@ $(document).ready(function(){
     $("#information").on("click","#btn_addrule",function(){
         showLoadingMask();
         csrftoken = Cookies.get('csrftoken');
-        console.log("CLICK ADD RULE");
+        /*console.log("CLICK ADD RULE");
         console.log($("#select_fw").val());
         console.log($("#source").val());
         console.log($("#destination").val());
         console.log($("#protocol").val());
         console.log($("#actions").val());
-        console.log($("#priority").val());
+        console.log($("#priority").val());*/
 
         var rule = "{";
         if($("#source").val() != ""){rule = rule+'"nw_src": "'+$("#source").val()+'",';}
@@ -499,8 +486,8 @@ $(document).ready(function(){
             },
             success: function(result){
                 hideLoadingMask();
-                console.log("SUCCESS");
-                console.log(result);
+                //console.log("SUCCESS");
+                //console.log(result);
                 //$('.collapsible').collapsible('close',1);
                 closeCollapsible("#itemRulesFw", "#headerRulesFw", "#bodyRulesFw");
                 Materialize.toast("Rule added.", 3000);
@@ -515,11 +502,11 @@ $(document).ready(function(){
     });
 
     $("#information").on("click",".delete_rule", function(){
-        console.log("Delete rule");
+        //console.log("Delete rule");
         var btn_id = this.id.split("_");
         var swid = btn_id[1];
         var ruleid = btn_id[2];
-        console.log(swid+"|"+ruleid);
+        //console.log(swid+"|"+ruleid);
         $.ajax({
             url: "http://"+ip+":8080/firewall/rules/"+swid,
             type: "DELETE",
@@ -528,8 +515,8 @@ $(document).ready(function(){
                 //xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
             success: function(result){
-                console.log("SUCCESS");
-                console.log(result);
+                //console.log("SUCCESS");
+                //console.log(result);
                 //$('.collapsible').collapsible('close', 1);
                 closeCollapsible("#itemRulesFw", "#headerRulesFw", "#bodyRulesFw");
                 Materialize.toast("Rule deleted.", 3000);
@@ -557,8 +544,8 @@ $(document).ready(function(){
                 //xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
             success: function(result){
-                console.log("SUCCESS");
-                console.log(result);
+                //console.log("SUCCESS");
+                //console.log(result);
                 //$('.collapsible').collapsible('close', 1);
                 Materialize.toast("Data deleted.", 3000);
             },
@@ -591,6 +578,28 @@ $(document).ready(function(){
             }
         });
     });
+
+    function controllerChecker(){
+        if(activatedIds.indexOf('firewall') != -1){
+            var i=0;
+            /*while(i<10){
+                setTimeout(function(){
+                    $.ajax({
+                        url: "http://"+ip+":8080/firewall/module/status",
+                        success: function(response){
+                            console.log(i+response);
+                            i = 11;
+                        },
+                        error: function(response){
+                            console.log(response.statusText);
+                            i++;
+                        },
+                        timeout: 1000,
+                    });
+                }, 5000);
+            }*/
+        }
+    }
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
         csrftoken = Cookies.get('csrftoken');
