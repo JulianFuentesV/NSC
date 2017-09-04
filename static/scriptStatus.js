@@ -2,7 +2,7 @@ $(document).ready(function(){
 
     var url = $("#url").text();
     //console.log("url: "+url);
-    $.get(url);
+    //$.get(url);
 
     var ip = $("#ip").text();
     ip = ip.split(":")[0];
@@ -52,200 +52,177 @@ $(document).ready(function(){
 
     $("#information").html("");
     showLoadingMask();
-    controllerChecker();
-    /*$("#information").html(
-    '<div class="center-align" style="margin: auto;">'
-    +'    <div class="preloader-wrapper big active">'
-    +'    <div class="spinner-layer spinner-blue">'
-    +'        <div class="circle-clipper left">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="gap-patch">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="circle-clipper right">'
-    +'        <div class="circle"></div>'
-    +'        </div>'
-    +'    </div>'
-    +'    <div class="spinner-layer spinner-red">'
-    +'        <div class="circle-clipper left">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="gap-patch">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="circle-clipper right">'
-    +'        <div class="circle"></div>'
-    +'        </div>'
-    +'    </div>'
-    +'    <div class="spinner-layer spinner-yellow">'
-    +'        <div class="circle-clipper left">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="gap-patch">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="circle-clipper right">'
-    +'        <div class="circle"></div>'
-    +'        </div>'
-    +'    </div>'
-    +'    <div class="spinner-layer spinner-green">'
-    +'        <div class="circle-clipper left">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="gap-patch">'
-    +'        <div class="circle"></div>'
-    +'        </div><div class="circle-clipper right">'
-    +'        <div class="circle"></div>'
-    +'        </div>'
-    +'    </div>'
-    +'    </div>'
-    +'</div>');*/
-
+    $.ajax({
+        url: "http://"+ip+":8081/status/",
+        success: function(response){
+            if(response != 0){
+                console.log("!=0");
+                loadingView();
+            } else {
+                console.log("==0");
+                $.get(url);
+                controllerChecker(applyRules);
+            }
+        },
+        error: function(response){
+            Materialize.toast("Error. Try again.", 3000);
+        },
+        timeout: 1000,
+    });
+    
     //console.log("activatedIds");
     //console.log(activatedIds);
 
     var swIds = []; //usado por el firewall
     var idsSw = []; //usado por el proxy
 
-    for(i = 0; i<totalItems; i++){
-        switch(activatedIds[i]){
-            case 'firewall':
-                //console.log("firewall encontrado");
-                url = "http://"+ip+":8080/firewall/module/status";
-                setTimeout(function(){
-                    $.getJSON("http://"+ip+":8080/firewall/module/status", function(data){
-                        console.log(data);
-                        hideLoadingMask();
-                        //$("#information").html("");
-                        var listFw =
-                            '<ul id="listFw" class="collapsible popout" data-collapsible="accordion">'
-                            +'   <li id="itemFw">'
-                            +'    <div class="collapsible-header active"><i class="material-icons">view_column</i>Firewall Status</div>'
-                            +'    <div id="bodyFw" class="collapsible-body center-align"><span>';
-                        var check = "";
-                        data.forEach(function(element) {
-                            switchID = element.switch_id;
-                            swIds.push(switchID);
-                            status = element.status;
-                            console.log("status: "+status);
-                            if(status === "enable"){
-                                check = "checked";
-                            } else {
-                                check = "";
-                            }
+    function loadingView(){
+        for(i = 0; i<totalItems; i++){
+            switch(activatedIds[i]){
+                case 'firewall':
+                    //console.log("firewall encontrado");
+                    url = "http://"+ip+":8080/firewall/module/status";
+                    setTimeout(function(){
+                        $.getJSON("http://"+ip+":8080/firewall/module/status", function(data){
+                            //console.log(data);
+                            hideLoadingMask();
+                            //$("#information").html("");
+                            var listFw =
+                                '<ul id="listFw" class="collapsible popout" data-collapsible="accordion">'
+                                +'   <li id="itemFw">'
+                                +'    <div class="collapsible-header active"><i class="material-icons">view_column</i>Firewall Status</div>'
+                                +'    <div id="bodyFw" class="collapsible-body center-align"><span>';
+                            var check = "";
+                            data.forEach(function(element) {
+                                switchID = element.switch_id;
+                                swIds.push(switchID);
+                                status = element.status;
+                                //console.log("status: "+status);
+                                if(status === "enable"){
+                                    check = "checked";
+                                } else {
+                                    check = "";
+                                }
+                                listFw = listFw +
+                                //'    <b>Switch '+switchID+': </b>'+status+'. '
+                                '    <b>Switch '+switchID+' </b>'
+                                +'<div class="switch"><label>Off'
+                                +'<input id="cb_'+switchID+'" type="checkbox" class="cb_fw" '+check+'>'
+                                +'<span class="lever"></span>On</label></div>'
+                                +'</br>';
+                            }, this);
                             listFw = listFw +
-                            //'    <b>Switch '+switchID+': </b>'+status+'. '
-                            '    <b>Switch '+switchID+' </b>'
-                            +'<div class="switch"><label>Off'
-                            +'<input id="cb_'+switchID+'" type="checkbox" class="cb_fw" '+check+'>'
-                            +'<span class="lever"></span>On</label></div>'
-                            +'</br>';
-                        }, this);
-                        listFw = listFw +
-                            '     </span></div>'
-                            +'    </li>'
-                            +'    <li id="itemRulesFw"><div id="headerRulesFw" class="collapsible-header"><i class="material-icons">view_column</i>Firewall Rules</div>'
-                            +'      <div id="bodyRulesFw" class="collapsible-body center-align"><span>'
-                            +'      </span></div></li>'
-                            +'</ul>';
+                                '     </span></div>'
+                                +'    </li>'
+                                +'    <li id="itemRulesFw"><div id="headerRulesFw" class="collapsible-header"><i class="material-icons">view_column</i>Firewall Rules</div>'
+                                +'      <div id="bodyRulesFw" class="collapsible-body center-align"><span>'
+                                +'      </span></div></li>'
+                                +'</ul>';
 
-                        $("#information").append(listFw);
-                        $("#listFw").addClass("col");
-                        $("#listFw").addClass(columns);
-                        $("#listFw").addClass("offset-"+offset);
-                        $('.collapsible').collapsible({accordion: true});
-                    }).fail(function(){Materialize.toast("Timeout", 3000);});
-                }, 7000);
-                break;
-            case 'loadBalancer':
-                //console.log("Load balancer encontrado");
-                //hideLoadingMask();
-                var listLb = '<ul id="listLb" class="collapsible popout" data-collapsible="accordion">'
-                            +'  <li id="itemLb">'
-                            +'    <div class="collapsible-header active"><i class="material-icons">swap_calls</i>Load Balancer</div>'
-                            +'    <div id="bodyLb" class="collapsible-body center-align"><span>'
-                            +'      <div class="input-field inline">'
-                            +'          <input id="virtualIP" type="text" class="validate">'
-                            +'          <label for="virtualIP" data-error="wrong" data-success="right">Virtual IP</label>'
-                            +'      </div>'
-                            +'      <button id="btn_createlb" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Create Load Balancer'
-                            +'          <i class="material-icons left">launch</i>'
-                            +'      </button>'
-                            +'      <button id="btn_deletelb" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Delete Load Balancer'
-                            +'          <i class="material-icons left">delete</i>'
-                            +'      </button>'
-                            +'    </span></div>'
-                            +'  </li>'
-                            +'</ul>';
-                $("#information").append(listLb);
-                $("#listLb").addClass("col");
-                $("#listLb").addClass(columns);
-                $("#listLb").addClass("offset-"+offset);
-                $('.collapsible').collapsible({accordion: true});
-                break;
-            case 'router':
-                //console.log("Proxy encontrado");
-                setTimeout(function(){
-                    $.getJSON("http://"+ip+":8080/router/all",function(response){
-                        hideLoadingMask();
-                        console.log("router response");
-                        console.log(response);
-                        response.forEach(function(element){
-                            var idsw = element.switch_id;
-                            var in_net = element.internal_network;
-                            idsSw.push(idsw);
-                            console.log(idsw);
-                            console.log(in_net);
-                            $("#bodyR").append("<br><p style='margin: 0 14px; padding: 0;'><b>"+idsw+"</b></p><br>");
-                            $("#select_r").append("<option value='"+idsw+"'>Switch "+idsw+"</option>");
-                            // condicional in_net
-                            if(in_net[0].address){
-                                in_net[0].address.forEach(function(ad){
-                                    $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>"+ad.address_id+": "+ad.address+"<button id='btn_"+idsw+"_"+ad.address_id+"' class='delete_data_r' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button></p>");
-                                },this);
-                            }else{
-                                $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>Data not found.</p>");
-                            }
-                            $("#bodyR").append("<br>");
-                        },this);
-                        $("#select_r").material_select();
-                    }).fail(function(){Materialize.toast("Timeout", 3000);});
-                    var listR = '<ul id="listR" class="collapsible popout" data-collapsible="accordion">'
-                                +'  <li id="itemR">'
-                                +'    <div class="collapsible-header active"><i class="material-icons">group_work</i>Router</div>'
-                                +'    <div id="bodyR" class="collapsible-body center-align"><span>'
+                            $("#information").append(listFw);
+                            $("#listFw").addClass("col");
+                            $("#listFw").addClass(columns);
+                            $("#listFw").addClass("offset-"+offset);
+                            $('.collapsible').collapsible({accordion: true});
+                        }).fail(function(){Materialize.toast("Timeout", 3000);});
+                    }, 1500);
+                    break;
+                case 'loadBalancer':
+                    //console.log("Load balancer encontrado");
+                    //hideLoadingMask();
+                    var listLb = '<ul id="listLb" class="collapsible popout" data-collapsible="accordion">'
+                                +'  <li id="itemLb">'
+                                +'    <div class="collapsible-header active"><i class="material-icons">swap_calls</i>Load Balancer</div>'
+                                +'    <div id="bodyLb" class="collapsible-body center-align"><span>'
+                                +'      <div class="input-field inline">'
+                                +'          <input id="virtualIP" type="text" class="validate">'
+                                +'          <label for="virtualIP" data-error="wrong" data-success="right">Virtual IP</label>'
+                                +'      </div>'
+                                +'      <button id="btn_createlb" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Create Load Balancer'
+                                +'          <i class="material-icons left">launch</i>'
+                                +'      </button>'
+                                +'      <button id="btn_deletelb" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Delete Load Balancer'
+                                +'          <i class="material-icons left">delete</i>'
+                                +'      </button>'
                                 +'    </span></div>'
                                 +'  </li>'
-                                +'  <li id="dataR">'
-                                +'    <div class="collapsible-header active"><i class="material-icons">group_work</i>Routing data</div>'
-                                +'    <div id="dataBodyR" class="collapsible-body center-align">'
-                                +'      <div class="input-field inline" style="width: 200px;">'
-                                +'          <select id="select_r" style="width: 200px;" class="center-align">'
-                                +'              <option value="" disabled selected>Choose your switch</option>'
-                                +'          </select>'
-                                +'      </div>'
-                                +'      <div class="input-field inline">'
-                                +'          <input id="address_r" type="text" class="validate">'
-                                +'          <label for="address_r" data-error="wrong" data-success="right">Address</label>'
-                                +'      </div>'
-                                +'      <div class="input-field inline">'
-                                +'          <input id="destination_r" type="text" class="validate">'
-                                +'          <label for="destination_r" data-error="wrong" data-success="right">Destination</label>'
-                                +'      </div>'
-                                +'      <div class="input-field inline">'
-                                +'          <input id="gateway_r" type="text" class="validate">'
-                                +'          <label for="gateway_r" data-error="wrong" data-success="right">Gateway</label>'
-                                +'      </div><br>'
-                                +'      <button id="btn_saveR" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Save'
-                                +'          <i class="material-icons right">send</i>'
-                                +'      </button>'
-                                +'    </div>'
-                                +'  </li>'
                                 +'</ul>';
-                    $("#information").append(listR);
-                    $("#listR").addClass("col");
-                    $("#listR").addClass(columns);
-                    $("#listR").addClass("offset-"+offset);
+                    $("#information").append(listLb);
+                    $("#listLb").addClass("col");
+                    $("#listLb").addClass(columns);
+                    $("#listLb").addClass("offset-"+offset);
                     $('.collapsible').collapsible({accordion: true});
-                }, 7000);
-                break;
-            default:
-                //console.log(activatedIds[i]+" encontrado");
-                break;
+                    break;
+                case 'router':
+                    //console.log("Proxy encontrado");
+                    setTimeout(function(){
+                        $.getJSON("http://"+ip+":8080/router/all",function(response){
+                            hideLoadingMask();
+                            //console.log("router response");
+                            //console.log(response);
+                            response.forEach(function(element){
+                                var idsw = element.switch_id;
+                                var in_net = element.internal_network;
+                                idsSw.push(idsw);
+                                //console.log(idsw);
+                                //console.log(in_net);
+                                $("#bodyR").append("<br><p style='margin: 0 14px; padding: 0;'><b>"+idsw+"</b></p><br>");
+                                $("#select_r").append("<option value='"+idsw+"'>Switch "+idsw+"</option>");
+                                // condicional in_net
+                                if(in_net[0].address){
+                                    in_net[0].address.forEach(function(ad){
+                                        $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>"+ad.address_id+": "+ad.address+"<button id='btn_"+idsw+"_"+ad.address_id+"' class='delete_data_r' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button></p>");
+                                    },this);
+                                }else{
+                                    $("#bodyR").append("<p style='margin: 0 14px; padding: 0;'>Data not found.</p>");
+                                }
+                                $("#bodyR").append("<br>");
+                            },this);
+                            $("#select_r").material_select();
+                        }).fail(function(){Materialize.toast("Timeout", 3000);});
+                        var listR = '<ul id="listR" class="collapsible popout" data-collapsible="accordion">'
+                                    +'  <li id="itemR">'
+                                    +'    <div class="collapsible-header active"><i class="material-icons">group_work</i>Router</div>'
+                                    +'    <div id="bodyR" class="collapsible-body center-align"><span>'
+                                    +'    </span></div>'
+                                    +'  </li>'
+                                    +'  <li id="dataR">'
+                                    +'    <div class="collapsible-header active"><i class="material-icons">group_work</i>Routing data</div>'
+                                    +'    <div id="dataBodyR" class="collapsible-body center-align">'
+                                    +'      <div class="input-field inline" style="width: 200px;">'
+                                    +'          <select id="select_r" style="width: 200px;" class="center-align">'
+                                    +'              <option value="" disabled selected>Choose your switch</option>'
+                                    +'          </select>'
+                                    +'      </div>'
+                                    +'      <div class="input-field inline">'
+                                    +'          <input id="address_r" type="text" class="validate">'
+                                    +'          <label for="address_r" data-error="wrong" data-success="right">Address</label>'
+                                    +'      </div>'
+                                    +'      <div class="input-field inline">'
+                                    +'          <input id="destination_r" type="text" class="validate">'
+                                    +'          <label for="destination_r" data-error="wrong" data-success="right">Destination</label>'
+                                    +'      </div>'
+                                    +'      <div class="input-field inline">'
+                                    +'          <input id="gateway_r" type="text" class="validate">'
+                                    +'          <label for="gateway_r" data-error="wrong" data-success="right">Gateway</label>'
+                                    +'      </div><br>'
+                                    +'      <button id="btn_saveR" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Save'
+                                    +'          <i class="material-icons right">send</i>'
+                                    +'      </button>'
+                                    +'    </div>'
+                                    +'  </li>'
+                                    +'</ul>';
+                        $("#information").append(listR);
+                        $("#listR").addClass("col");
+                        $("#listR").addClass(columns);
+                        $("#listR").addClass("offset-"+offset);
+                        $('.collapsible').collapsible({accordion: true});
+                    }, 1500);
+                    break;
+                default:
+                    //console.log(activatedIds[i]+" encontrado");
+                    break;
+            }
         }
     }
 
@@ -254,9 +231,9 @@ $(document).ready(function(){
         showLoadingMask();
         // Hacer peticion
         var idClicked = this.id.split("_")[1]; //id switch clickeado
-        console.log(idClicked);
+        //console.log(idClicked);
         var isChecked = this.checked;
-        console.log(isChecked);
+        //console.log(isChecked);
         var csrftoken = Cookies.get('csrftoken');
         var mUrl = "http://"+ip+":8080/firewall/module/";
         if(isChecked){
@@ -297,9 +274,9 @@ $(document).ready(function(){
     });
 
     $("#information").on("click","#btn_createlb",function(){
-        console.log("create lb");
+        //console.log("create lb");
         var virtualIP = $("#virtualIP").val();
-        console.log(virtualIP);
+        //console.log(virtualIP);
         $.ajax({
             url: "http://"+ip+":8080/v1.0/loadbalancer/create",
             type: "POST",
@@ -321,9 +298,9 @@ $(document).ready(function(){
     });
 
     $("#information").on("click","#btn_deletelb",function(){
-        console.log("delete lb");
+        //console.log("delete lb");
         var virtualIP = $("#virtualIP").val();
-        console.log(virtualIP);
+        //console.log(virtualIP);
         $.ajax({
             url: "http://"+ip+":8080/v1.0/loadbalancer/delete",
             type: "POST",
@@ -332,8 +309,8 @@ $(document).ready(function(){
                 //xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
             success: function(result){
-                console.log("SUCCESS");
-                console.log(result);
+                //console.log("SUCCESS");
+                //console.log(result);
                 //Materialize.toast(msgSuccess, 3000);
             },
             error: function(result){
@@ -346,7 +323,7 @@ $(document).ready(function(){
 
     $("#information").on("click","#btn_saveR", function(){
         showLoadingMask();
-        console.log("save R");
+        //console.log("save R");
         var select_r = $("#select_r").val();
         var address_r = $("#address_r").val();
         var destination_r = $("#destination_r").val();
@@ -367,8 +344,8 @@ $(document).ready(function(){
             },
             success: function(result){
                 hideLoadingMask();
-                console.log("SUCCESS");
-                console.log(result);
+                //console.log("SUCCESS");
+                //console.log(result);
                 Materialize.toast("Data saved!", 3000);
             },
             error: function(result){
@@ -531,11 +508,11 @@ $(document).ready(function(){
     });
 
     $("#information").on("click",".delete_data_r", function(){
-        console.log("Delete data r");
+        //console.log("Delete data r");
         var btn_id = this.id.split("_");
         var swid = btn_id[1];
         var dataid = btn_id[2];
-        console.log(swid+"|"+dataid);
+        //console.log(swid+"|"+dataid);
         $.ajax({
             url: "http://"+ip+":8080/router/"+swid+"/delete",
             type: "POST",
@@ -579,25 +556,43 @@ $(document).ready(function(){
         });
     });
 
-    function controllerChecker(){
+    function controllerChecker(callback){
         if(activatedIds.indexOf('firewall') != -1){
             var i=0;
-            /*while(i<10){
-                setTimeout(function(){
+            var interval = setInterval(function(){
+                if(i>8){
+                    clearInterval(interval);
+                    callback(false, 'firewall');
+                } else {
                     $.ajax({
                         url: "http://"+ip+":8080/firewall/module/status",
                         success: function(response){
-                            console.log(i+response);
-                            i = 11;
+                            //console.log(i+response);
+                            clearInterval(interval);
+                            callback(true, 'firewall');
                         },
                         error: function(response){
-                            console.log(response.statusText);
+                            //console.log(response.statusText);
                             i++;
                         },
                         timeout: 1000,
                     });
-                }, 5000);
-            }*/
+                }
+            }, 5000);
+        }
+    }
+
+    function applyRules(controllerState, nf){
+        //controllerState? console.log("CONTROLLER YES") : console.log("NOO CONTROLLER");
+        if(controllerState){
+            if(nf == "firewall"){
+                var rfw = $("#rfw").text();
+                rfw = JSON.parse(rfw);
+                rfw.forEach(function(r){
+                    console.log(r);
+                });
+            }
+            loadingView();
         }
     }
 
@@ -645,48 +640,5 @@ $(document).ready(function(){
     function hideLoadingMask(){
         $("#loading_mask").addClass("display-none");
     }
-
-    /*function setLoadingMask(cont){
-        $(cont).append('<div id="loading_mask" style="position: relative; background: rgba(0,0,0,0.25);">'
-                +' <div class="preloader-wrapper big active">'
-                +'     <div class="spinner-layer spinner-blue">'
-                +'         <div class="circle-clipper left">'
-                +'         <div class="circle"></div>'
-                +'         </div><div class="gap-patch">'
-                +'         <div class="circle"></div>'
-                +'         </div><div class="circle-clipper right">'
-                +'         <div class="circle"></div>'
-                +'         </div>'
-                +'     </div>'
-                +'     <div class="spinner-layer spinner-red">'
-                +'         <div class="circle-clipper left">'
-                +'         <div class="circle"></div>'
-                +'         </div><div class="gap-patch">'
-                +'         <div class="circle"></div>'
-                +'         </div><div class="circle-clipper right">'
-                +'         <div class="circle"></div>'
-                +'         </div>'
-                +'     </div>'
-                +'     <div class="spinner-layer spinner-yellow">'
-                +'         <div class="circle-clipper left">'
-                +'         <div class="circle"></div>'
-                +'         </div><div class="gap-patch">'
-                +'         <div class="circle"></div>'
-                +'         </div><div class="circle-clipper right">'
-                +'         <div class="circle"></div>'
-                +'         </div>'
-                +'     </div>'
-                +'    <div class="spinner-layer spinner-green">'
-                +'        <div class="circle-clipper left">'
-                +'        <div class="circle"></div>'
-                +'        </div><div class="gap-patch">'
-                +'        <div class="circle"></div>'
-                +'        </div><div class="circle-clipper right">'
-                +'        <div class="circle"></div>'
-                +'        </div>'
-                +'    </div>'
-                +'</div>'
-            +'</div>');
-    }*/
 
 });

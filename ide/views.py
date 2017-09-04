@@ -105,13 +105,15 @@ def status(request):
 				fs = fs + orden[f]
 		else:
 			fs = fs + i
-	print("fs:")
-	print(fs)
+	#print("fs:")
+	#print(fs)
 	url = 'http://'+ip+'/launcher?f='+fs+'&tp1='+topo_p1+'&tp2='+topo_p2
-	print(url)
-	#urllib.request.urlopen(url).read()
-	e = Execution(nfs = fs, ip = ip, state = 1, url=currentURL)
-	e.save()
+	ex = Execution.objects.filter(ip = ip, state = 1)
+	#print(len(ex.values()))
+	if(len(ex.values()) == 0):
+		print("new")
+		e = Execution(nfs = fs, ip = ip, state = 1, url=currentURL)
+		e.save()
 	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw})
 
 def setExecutionStateOff(request):
