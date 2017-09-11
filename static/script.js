@@ -133,8 +133,8 @@ $(document).ready(function(){
                 totalItems++;
             }
             content = content+"}";
-            console.log("content: "+content);
-            console.log("totalItems: "+totalItems);
+            //console.log("content: "+content);
+            //console.log("totalItems: "+totalItems);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }
@@ -143,11 +143,24 @@ $(document).ready(function(){
     $("#btn_saveChain").on("click", function(){
         name = $("#name").val();
         description = $("#description").val();
-        console.log("NAME: "+name+" DES: "+description);
+        var topo_p1 = $("#topo_p1").text();
+        var topo_p2 = $("#topo_p2").text();
+        //console.log("NAME: "+name+" DES: "+description);
         Materialize.toast("Saving chain..", 3000, 'rounded');
+        //----> Fw Config
+        var rulesFw = $('#confirmedFw').find('.rcFw');
+        var rFw = "[";
+        for(var r=0; r<rulesFw.length; r++){
+            rFw += rulesFw[r].innerHTML+",";
+        }
+        if(rFw != "["){
+            rFw = rFw.slice(0,-1);
+        }
+        rFw += "]";
+        //<----
         url = '/ide/chain/save/'
         type = 'POST'
-        data = { name: name, description: description, html: content, size: totalItems }
+        data = { name: name, description: description, html: content, size: totalItems, topo1: topo_p1, topo2: topo_p2, rFw: rFw }
         msgSuccess = "Chain saved!";
         msgError = "Error saving chain!";
         ajaxRequest(url, type, data, msgSuccess, msgError);

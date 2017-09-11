@@ -43,9 +43,14 @@ def saveChain(request):
 	description = request.POST.get('description')
 	content = request.POST.get('html')
 	size = request.POST.get('size')
+	topo1 = request.POST.get('topo1')
+	topo2 = request.POST.get('topo2')
+	rFw = request.POST.get('rFw')
 	#print("[Controller] name: "+name)
 	chain = Chain(name = name, description = description, html = content, size = size)
 	chain.save()
+	configChain = Configuration(nfsconfig = "{fw:"+rFw+"}" , topology = "Tree,"+topo1+","+topo2, idchain = chain)
+	configChain.save()
 	return HttpResponse(status=200)
 
 def deleteChain(request):
@@ -83,25 +88,25 @@ def status(request):
 	for i in funcs:
 		if fs != "":
 			fs = fs + ","
-		print("i: "+i)
+		#print("i: "+i)
 		if i != "firewall" and i != "loadBalancer" and i != "router":
 			chain = Chain.objects.get(id=i)
 			objs_json = chain.html
 			nfs = json.loads(objs_json)
-			print("nfs: ")
-			print(nfs)
+			#print("nfs: ")
+			#print(nfs)
 			orden = [None]*chain.size
 			for pos in nfs:
-				print("pos: " + pos)
+				#print("pos: " + pos)
 				nf = nfs[pos]
-				print("nf: " + nf)
+				#print("nf: " + nf)
 				orden[int(pos)] = nf
-			print("orden")
-			print(orden)
+			#print("orden")
+			#print(orden)
 			for f in range(0,len(orden)):	# 0 < f < len(orden)
 				if f > 0: 
 					fs = fs + ","
-				print("orden["+str(f)+"]: "+orden[f])
+				#print("orden["+str(f)+"]: "+orden[f])
 				fs = fs + orden[f]
 		else:
 			fs = fs + i
@@ -111,10 +116,13 @@ def status(request):
 	ex = Execution.objects.filter(ip = ip, state = 1)
 	#print(len(ex.values()))
 	if(len(ex.values()) == 0):
-		print("new")
+		#print("new")
 		e = Execution(nfs = fs, ip = ip, state = 1, url=currentURL)
 		e.save()
-	return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw})
+		return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw})
+	else:
+		exe_obj = list(ex)
+		return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':exe_obj[0].id, 'rfw':rfw})
 
 def setExecutionStateOff(request):
 	id = request.GET.get('idExec','0')
