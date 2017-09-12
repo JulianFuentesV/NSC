@@ -119,10 +119,10 @@ def status(request):
 		#print("new")
 		e = Execution(nfs = fs, ip = ip, state = 1, url=currentURL)
 		e.save()
-		return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw})
+		return render(request, 'status.html', {'type':'new', 'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw})
 	else:
 		exe_obj = list(ex)
-		return render(request, 'status.html', {'ip':ip, 'funcs':fs, 'url':url, 'idExec':exe_obj[0].id, 'rfw':rfw})
+		return render(request, 'status.html', {'type':'old', 'ip':ip, 'funcs':fs, 'url':url, 'idExec':exe_obj[0].id, 'rfw':rfw})
 
 def setExecutionStateOff(request):
 	id = request.GET.get('idExec','0')

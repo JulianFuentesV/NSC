@@ -237,7 +237,7 @@ $(document).ready(function(){
         +'Protocol: '+protocol+', Action: '+actions+', '
         +'Priority: '+priority
         +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button>"
-        +'<span hidden class="rcFw">{"sw":"'+numSwitch+'","s":"'+source+'","d":"'+destination+'",'
+        +'<span hidden class="rcFw">{"type":"r","sw":"'+numSwitch+'","s":"'+source+'","d":"'+destination+'",'
         +'"p":"'+protocol+'","a":"'+actions+'","pri":"'+priority+'"}</span>'
         +"</p>");
         ruleCount += 1;
@@ -255,7 +255,7 @@ $(document).ready(function(){
         $("#confirmedFw").append('<p id="ruleFw_'+ruleCount+'">'+ruleCount+'. '
         +'Switch '+this.id.split('_')[1]+': '+state
         +"<button id='btnDelete_"+ruleCount+"' class='del_confirmed_fw' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button>"
-        +'<span hidden class="rcFw">{"switch":"'+this.id.split('_')[1]+'","state":"'+state+'"}</span>'
+        +'<span hidden class="rcFw">{"type":"s","switch":"'+this.id.split('_')[1]+'","state":"'+state+'"}</span>'
         +"</p>");
         ruleCount += 1;
         console.log($("#"+this.id).is(":checked"));

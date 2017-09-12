@@ -52,23 +52,16 @@ $(document).ready(function(){
 
     $("#information").html("");
     showLoadingMask();
-    $.ajax({
-        url: "http://"+ip+":8081/status/",
-        success: function(response){
-            if(response != 0){
-                console.log("!=0");
-                loadingView();
-            } else {
-                console.log("==0");
-                $.get(url);
-                controllerChecker(applyRules);
-            }
-        },
-        error: function(response){
-            Materialize.toast("Error. Try again.", 3000);
-        },
-        timeout: 1000,
-    });
+    if($("#type").text() == "old"){
+        console.log("old");
+        loadingView();
+    } else if($("#type").text() == "new") {
+        console.log("new");
+        $.get(url);
+        controllerChecker(applyRules);
+    } else {
+        alert("Error type");
+    }
     
     //console.log("activatedIds");
     //console.log(activatedIds);
@@ -590,6 +583,7 @@ $(document).ready(function(){
                 rfw = JSON.parse(rfw);
                 rfw.forEach(function(r){
                     console.log(r);
+                    console.log(r.type);
                 });
             }
             loadingView();
