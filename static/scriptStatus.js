@@ -529,6 +529,7 @@ $(document).ready(function(){
     });
 
     $("#btn_stop").on("click", function(){
+        $("#msjLoadMask").text("Stopping...");
         showLoadingMask();
         $.get("http://"+ip+":8081/stop", function(response){
             if(response == "stopped"){
@@ -550,6 +551,7 @@ $(document).ready(function(){
     });
 
     function controllerChecker(callback){
+        $("#msjLoadMask").text("Launching...");
         if(activatedIds.indexOf('firewall') != -1){
             var i=0;
             var interval = setInterval(function(){
@@ -562,7 +564,7 @@ $(document).ready(function(){
                         success: function(response){
                             //console.log(i+response);
                             clearInterval(interval);
-                            callback(true, 'firewall');
+                            callback(true, 'firewall', response);
                         },
                         error: function(response){
                             //console.log(response.statusText);
@@ -575,18 +577,65 @@ $(document).ready(function(){
         }
     }
 
-    function applyRules(controllerState, nf){
-        //controllerState? console.log("CONTROLLER YES") : console.log("NOO CONTROLLER");
+    function applyRules(controllerState, nf, status){
+        status = JSON.parse(status);
         if(controllerState){
+            $("#msjLoadMask").text("Configuring...");
             if(nf == "firewall"){
                 var rfw = $("#rfw").text();
                 rfw = JSON.parse(rfw);
                 rfw.forEach(function(r){
-                    console.log(r);
-                    console.log(r.type);
+                    console.log(r); //r.type = s (switch on or off) || r (rule)
+                    if(r.type == "s"){
+                        var mUrl = "http://"+ip+":8080/firewall/module/";
+                        var index = parseInt(r.switch) - 1;
+                        if(r.state == "On"){
+                            $.ajax({
+                                url: mUrl+"enable/"+status[index].switch_id,
+                                type: "PUT",
+                                crossDomain: true,
+                                success: function(result){},
+                                error: function(result){}
+                            });
+                        } else {
+                            $.ajax({
+                                url: mUrl+"disable/"+r.switch,
+                                type: "PUT",
+                                crossDomain: true,
+                                success: function(result){},
+                                error: function(result){}
+                            });
+                        }
+                    }
+                    if(r.type == "r"){
+                        var rule = "{";
+                        if(r.s != ""){rule = rule+'"nw_src": "'+r.s+'",';}
+                        if(r.d != ""){rule = rule+'"nw_dst": "'+r.d+'",';}
+                        if(r.p != ""){rule = rule+'"nw_proto": "'+r.p+'",';}
+                        if(r.a != ""){rule = rule+'"actions": "'+r.a+'",';}
+                        if(r.pri != ""){rule = rule+'"priority": "'+r.pri+'",';}
+                        rule = rule.slice(0, -1);
+                        rule = rule + "}";
+
+                        $.ajax({
+                            url: 'http://'+ip+':8080/firewall/rules/'+status[parseInt(r.sw) - 1].switch_id,
+                            type: 'POST',
+                            crossDomain: true,
+                            dataType: "json",
+                            data: rule,
+                            beforeSend: function(xhr, settings) {
+                                //xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                xhr.setRequestHeader("Content-Type","application/json");
+                            },
+                            success: function(result){},
+                            error: function(result){}
+                        });
+                    }
                 });
             }
             loadingView();
+        } else {
+            //TODO: Error page (controller off)
         }
     }
 

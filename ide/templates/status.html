@@ -56,9 +56,10 @@
             </div>
         </div>
         <div id="information" class="row"></div>
-        <div id="loading_mask" class="display-none" style="">
-            <div style="position: absolute; left: 49%; top: 50%; padding: 10px; background: #fff;">
-                <div class="preloader-wrapper big active">
+        <div id="loading_mask" class="display-none">
+            <div style="position: absolute; left: 45%; top: 40%; padding: 10px 10px 0px 10px; background: #fff;">
+                <table><tr><td>
+                <div class="preloader-wrapper big active" style="display: inline-block;">
                     <div class="spinner-layer spinner-blue">
                         <div class="circle-clipper left">
                         <div class="circle"></div>
@@ -98,10 +99,11 @@
                         <div class="circle"></div>
                         </div>
                     </div>
-                </div>
-                <div style="">
-                    <p>Cargando...</p>
-                </div>
+                </div></td>
+                <td><div style="display: inline-block;">
+                    <p id="msjLoadMask">Loading...</p>
+                </div></td>
+                </tr></table>
             </div>
         </div>
         <div><p id="url" style="display: none;">{{url}}</p></div>
