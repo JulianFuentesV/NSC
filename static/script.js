@@ -185,6 +185,7 @@ $(document).ready(function(){
             //$.get('http://'+ip+'/launcher?f='+ids);
             var tp1 = $("#topo_p1").text();
             var tp2 = $("#topo_p2").text();
+            //Send rules FW
             var rulesFw = $('#confirmedFw').find('.rcFw');
             var rFw = "[";
             for(var r=0; r<rulesFw.length; r++){
@@ -194,7 +195,17 @@ $(document).ready(function(){
                 rFw = rFw.slice(0,-1);
             }
             rFw += "]";
-            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2+'&rfw='+rFw);
+            //Send rules Router
+            var rulesR = $('#confirmedR').find('.rcR');
+            var rR = "[";
+            for(var r=0; r<rulesR.length; r++){
+                rR += rulesR[r].innerHTML+",";
+            }
+            if(rR != "["){
+                rR = rR.slice(0,-1);
+            }
+            rR += "]";
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2+'&rfw='+rFw+'&rr='+rR);
         } else {
             Materialize.toast("Error: Board empty!", 3000);
         }
@@ -216,6 +227,8 @@ $(document).ready(function(){
             }
         });
     });*/
+
+    //--- RULES FIREWALL
 
     ruleCount = 1;
 
@@ -264,6 +277,36 @@ $(document).ready(function(){
     $("#confirmedFw").on("click", ".del_confirmed_fw", function(){
         var idConfirmedRule = this.id.split('_')[1];
         $("#ruleFw_"+idConfirmedRule).remove();
+    });
+
+    //----RULES ROUTER
+    
+    ruleCountR = 1;
+
+    $("#newRulesR").on("click", "#btn_addrule_r", function(){
+        var numSwitchR = $("#sw_num_r").val();
+        var addressR = $("#address_r").val();
+        var destinationR = $("#destination_r").val();
+        var gatewayR = $("#gateway_r").val();
+
+        if($("#confirmedR").find('#defaultR').length > 0 || $("#confirmedR").html() == ""){
+            $("#confirmedR").html("");
+            ruleCountR = 1;
+        }
+        $("#confirmedR").append('<p id="ruleR_'+ruleCountR+'">'+ruleCountR+'. '
+        +'[Switch '+numSwitchR+'] '
+        +'Address: '+addressR+', Destination: '+destinationR+', '
+        +'Gateway: '+gatewayR
+        +"<button id='btnDeleteR_"+ruleCountR+"' class='del_confirmed_r' style='color: #ff0000; background: transparent !important; border: none;'><i class='material-icons left' style='font-size: 20px; height: 17px;'>delete</i></button>"
+        +'<span hidden class="rcR">{"sw":"'+numSwitchR+'","a":"'+addressR+'","d":"'+destinationR+'",'
+        +'"g":"'+gatewayR+'"}</span>'
+        +"</p>");
+        ruleCountR += 1;
+    });
+
+    $("#confirmedR").on("click", ".del_confirmed_r", function(){
+        var idConfirmedRuleR = this.id.split('_')[1];
+        $("#ruleR_"+idConfirmedRuleR).remove();
     });
 
     function setModalsConfig(){
@@ -339,7 +382,7 @@ $(document).ready(function(){
         $("#newRulesR").text("");
         var addRulesRHTML = ''
             +'<div class="input-field col s12">'
-            +'<select>'
+            +'<select id="sw_num_r">'
             +'  <option value="" disabled selected>Choose your option</option>';
         for(var e = 1; e <= s; e++){
             addRulesRHTML += '<option value="'+e+'">Switch '+e+'</option>';
@@ -350,18 +393,18 @@ $(document).ready(function(){
             +"</div>";
         addRulesRHTML += '<div class="center-align">'
         +'<div class="input-field inline">'
-        +'    <input id="address" type="text" class="validate" required>'
-        +'    <label for="address" data-error="wrong" data-success="right">Address</label>'
+        +'    <input id="address_r" type="text" class="validate" required>'
+        +'    <label for="address_r" data-error="wrong" data-success="right">Address</label>'
         +'</div>'
         +'<div class="input-field inline">'
-        +'    <input id="destination" type="text" class="validate" required>'
-        +'    <label for="destination" data-error="wrong" data-success="right">Destination</label>'
+        +'    <input id="destination_r" type="text" class="validate" required>'
+        +'    <label for="destination_r" data-error="wrong" data-success="right">Destination</label>'
         +'</div>'
         +'<div class="input-field inline">'
-        +'    <input id="gateway" type="text" class="validate">'
-        +'    <label for="gateway" data-error="wrong" data-success="right">Gateway</label>'
+        +'    <input id="gateway_r" type="text" class="validate">'
+        +'    <label for="gateway_r" data-error="wrong" data-success="right">Gateway</label>'
         +'</div>'
-        +'<button id="btn_addrule" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
+        +'<button id="btn_addrule_r" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Add rule'
         +'    <i class="material-icons right">send</i>'
         +'</button></div>';
         $("#newRulesR").append(addRulesRHTML);

@@ -53,10 +53,10 @@ $(document).ready(function(){
     $("#information").html("");
     showLoadingMask();
     if($("#type").text() == "old"){
-        console.log("old");
+        //console.log("old");
         loadingView();
     } else if($("#type").text() == "new") {
-        console.log("new");
+        //console.log("new");
         $.get(url);
         controllerChecker(applyRules);
     } else {
@@ -552,19 +552,32 @@ $(document).ready(function(){
 
     function controllerChecker(callback){
         $("#msjLoadMask").text("Launching...");
-        if(activatedIds.indexOf('firewall') != -1){
+        //if(activatedIds.indexOf('firewall') != -1){
             var i=0;
             var interval = setInterval(function(){
                 if(i>8){
                     clearInterval(interval);
-                    callback(false, 'firewall');
+                    callback(false, null);
                 } else {
                     $.ajax({
-                        url: "http://"+ip+":8080/firewall/module/status",
+                        url: "http://"+ip+":8080/stats/switches",
                         success: function(response){
                             //console.log(i+response);
                             clearInterval(interval);
-                            callback(true, 'firewall', response);
+                            //convert response to hex
+                            var responseHex = [];
+                            var responseArray = JSON.parse(response);
+                            for(var idx = 0; idx < responseArray.length; idx++){
+                                var hex = responseArray[idx].toString(16);
+                                var complement = "";
+                                for(var idxH = 0; hex.length+idxH < 16; idxH++){
+                                    complement += "0";
+                                }
+                                hex = complement+hex;
+                                //console.log(hex + " | s: "+hex.length);
+                                responseHex.push(hex);
+                            }
+                            callback(true, responseHex);
                         },
                         error: function(response){
                             //console.log(response.statusText);
@@ -574,24 +587,24 @@ $(document).ready(function(){
                     });
                 }
             }, 5000);
-        }
+        //}
     }
 
-    function applyRules(controllerState, nf, status){
-        status = JSON.parse(status);
+    function applyRules(controllerState, status){ //status = switch names
+        //status = JSON.parse(status);
         if(controllerState){
             $("#msjLoadMask").text("Configuring...");
-            if(nf == "firewall"){
+            if(activatedIds.indexOf('firewall') != -1){
                 var rfw = $("#rfw").text();
                 rfw = JSON.parse(rfw);
                 rfw.forEach(function(r){
-                    console.log(r); //r.type = s (switch on or off) || r (rule)
+                    //console.log(r); //r.type = s (switch on or off) || r (rule)
                     if(r.type == "s"){
                         var mUrl = "http://"+ip+":8080/firewall/module/";
                         var index = parseInt(r.switch) - 1;
                         if(r.state == "On"){
                             $.ajax({
-                                url: mUrl+"enable/"+status[index].switch_id,
+                                url: mUrl+"enable/"+status[index],
                                 type: "PUT",
                                 crossDomain: true,
                                 success: function(result){},
@@ -599,7 +612,7 @@ $(document).ready(function(){
                             });
                         } else {
                             $.ajax({
-                                url: mUrl+"disable/"+r.switch,
+                                url: mUrl+"disable/"+status[index],
                                 type: "PUT",
                                 crossDomain: true,
                                 success: function(result){},
@@ -618,7 +631,7 @@ $(document).ready(function(){
                         rule = rule + "}";
 
                         $.ajax({
-                            url: 'http://'+ip+':8080/firewall/rules/'+status[parseInt(r.sw) - 1].switch_id,
+                            url: 'http://'+ip+':8080/firewall/rules/'+status[parseInt(r.sw) - 1],
                             type: 'POST',
                             crossDomain: true,
                             dataType: "json",
@@ -631,6 +644,29 @@ $(document).ready(function(){
                             error: function(result){}
                         });
                     }
+                });
+            }
+            if(activatedIds.indexOf('router') != -1){
+                var rr = $("#rr").text();
+                rr = JSON.parse(rr);
+                rr.forEach(function(r){
+                    var d = "{";
+                    if(r.a != ""){d = d + '"address": "' + r.a + '",'; }
+                    if(r.d != ""){ d = d + '"destination": "' + r.d + '",'; }
+                    if(r.g != ""){ d = d + '"gateway": "' + r.g + '",'; }
+                    d = d.slice(0, -1);
+                    d = d + "}";
+
+                    $.ajax({
+                        url: "http://"+ip+":8080/router/"+status[parseInt(r.sw) - 1],
+                        type: "POST",
+                        data: d,
+                        beforeSend: function(xhr, settings) {
+                            //xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function(result){},
+                        error: function(result){}
+                    });
                 });
             }
             loadingView();
