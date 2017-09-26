@@ -45,6 +45,14 @@ html, body{
     width: 2000px;
 }
 
+.tabs .indicator {
+    background-color: #01579b;
+}
+
+table.highlight tbody tr:hover {
+    background-color: #cdcdcd !important;
+}
+
 /* PROPERTIES */
 
 .visible{

@@ -1,5 +1,11 @@
 $(document).ready(function(){
 
+    /* 
+    http://ryu.readthedocs.io/en/latest/app/ofctl_rest.html
+    */
+
+    $('ul.tabs').tabs({ 'swipeable': true });
+
     var url = $("#url").text();
     //console.log("url: "+url);
     //$.get(url);
@@ -7,6 +13,8 @@ $(document).ready(function(){
     var ip = $("#ip").text();
     ip = ip.split(":")[0];
     //console.log("IP: "+ip);
+
+    var statsInterval;
     
     var activatedItems = $("#activatedItems").find(".itemSelected");
     //console.log("Activated elements:");
@@ -217,6 +225,8 @@ $(document).ready(function(){
                     break;
             }
         }
+        statsIntervalClear();
+        statsIntervarStart(60000);
     }
 
     $("#information").on("click",".cb_fw",function(){
@@ -528,6 +538,42 @@ $(document).ready(function(){
 
     });
 
+    $("#btn_cmd").on("click", function(){
+        $('.modal').modal();
+        $('#modal_cmd').modal('open');
+    });
+
+    $("#btn_runcmd").on("click", function(){
+        var t = $("#target").val();
+        var c = $("#cmd").val();
+        $.get("http://"+ip+":8081/runcmd?t="+t+"&c="+c, function(response){
+            console.log(response);
+        });
+    });
+
+    $("#btn_diez").on("click",function(){
+        $("#stats_time").text("10s");
+        statsIntervalClear();
+        statsIntervarStart(10000);
+    });
+
+    $("#btn_treinta").on("click",function(){
+        $("#stats_time").text("30s");
+        statsIntervalClear();
+        statsIntervarStart(30000);
+    });
+
+    $("#btn_sesenta").on("click",function(){
+        $("#stats_time").text("60s");
+        statsIntervalClear();
+        statsIntervarStart(60000);
+    });
+
+    $("#btn_off").on("click",function(){
+        $("#stats_time").text("off");
+        statsIntervalClear();
+    });
+
     $("#btn_stop").on("click", function(){
         $("#msjLoadMask").text("Stopping...");
         showLoadingMask();
@@ -550,6 +596,8 @@ $(document).ready(function(){
         });
     });
 
+    var responseArray;
+
     function controllerChecker(callback){
         $("#msjLoadMask").text("Launching...");
         //if(activatedIds.indexOf('firewall') != -1){
@@ -566,7 +614,7 @@ $(document).ready(function(){
                             clearInterval(interval);
                             //convert response to hex
                             var responseHex = [];
-                            var responseArray = JSON.parse(response);
+                            responseArray = JSON.parse(response);
                             for(var idx = 0; idx < responseArray.length; idx++){
                                 var hex = responseArray[idx].toString(16);
                                 var complement = "";
@@ -672,7 +720,73 @@ $(document).ready(function(){
             loadingView();
         } else {
             //TODO: Error page (controller off)
+            console.log("controller off");
         }
+    }
+
+    function statsIntervalClear(){
+        clearInterval(statsInterval);
+    }
+
+    function statsIntervarStart(time){
+        if(responseArray){
+            statsInterval = setInterval(function(){
+                $("#stats_body").html("");
+                responseArray.forEach(function(s){
+                    $("#stats_body").append('<tr id="row_'+s+'"><td>'+parseInt(s).toString(16)+'</td></tr>');
+                    $.ajax({
+                        url: "http://"+ip+":8080/stats/port/"+s,
+                        type: "GET",
+                        success: function(result){
+                            result = JSON.parse(result);
+                            for(var j = result[s].length; j>0; j--){
+                                var p = result[s];
+                                var port_no = j-1;
+                                if(j == 1){
+                                    $("#row_"+s).append(""
+                                        +"<td>"+port_no+"</td>"
+                                        +"<td>"+p[j-1].tx_packets+"</td>"
+                                        +"<td>"+p[j-1].rx_packets+"</td>"
+                                        +"<td>"+p[j-1].tx_dropped+"</td>"
+                                        +"<td>"+p[j-1].tx_dropped+"</td>"
+                                        +"<td>"+p[j-1].tx_errors+"</td>"
+                                        +"<td>"+p[j-1].tx_errors+"</td>"
+                                        +"<td>"+p[j-1].tx_bytes+"</td>"
+                                        +"<td>"+p[j-1].tx_bytes+"</td>"
+                                        +"<td>"+p[j-1].duration_sec+"</td>");
+                                }else{
+                                    $("#row_"+s).after("<tr>"
+                                        +"<td></td>"
+                                        +"<td>"+port_no+"</td>"
+                                        +"<td>"+p[j-1].tx_packets+"</td>"
+                                        +"<td>"+p[j-1].rx_packets+"</td>"
+                                        +"<td>"+p[j-1].tx_dropped+"</td>"
+                                        +"<td>"+p[j-1].tx_dropped+"</td>"
+                                        +"<td>"+p[j-1].tx_errors+"</td>"
+                                        +"<td>"+p[j-1].tx_errors+"</td>"
+                                        +"<td>"+p[j-1].tx_bytes+"</td>"
+                                        +"<td>"+p[j-1].tx_bytes+"</td>"
+                                        +"<td>"+p[j-1].duration_sec+"</td></tr>");
+                                }
+                            }
+                        },
+                        error: function(result){}
+                    });
+                });
+            },time);
+        } else {
+            getSwitches(time);
+        }
+    }
+
+    function getSwitches(t){
+        $.ajax({
+            url: "http://"+ip+":8080/stats/switches",
+            success: function(response){
+                responseArray = JSON.parse(response);
+                statsIntervarStart(t);
+            }
+        });
     }
 
     function ajaxRequest(mUrl, mType, mData, msgSuccess, msgError){
