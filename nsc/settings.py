@@ -25,7 +25,7 @@ SECRET_KEY = 'fs3lwkp-1(un7p()aip*&q7ryl3wb7zt-v#rl%yy0i%*%%$&x-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['nemasof.pythonanywhere.com']
 
 
 # Application definition
@@ -76,11 +76,11 @@ WSGI_APPLICATION = 'nsc.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql_cymysql',
-        'NAME': 'tesis',
-        'USER': 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nemasof$default',
+        'USER': 'nemasof',
+        'PASSWORD' : 'pruebasTe$is',
+        'HOST' : 'nemasof.mysql.pythonanywhere-services.com',
         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
     }
 }
