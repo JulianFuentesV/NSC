@@ -81,6 +81,7 @@ def status(request):
 	topo_p2 = request.GET.get('topop2','0')
 	rfw = request.GET.get('rfw','{}')
 	rr = request.GET.get('rr','{}')
+	rLb = request.GET.get('rLb','{}')
 	funcs = request.GET.get('funcs','')
 	funcs = funcs.split(',')
 	print(funcs)
@@ -120,10 +121,10 @@ def status(request):
 		#print("new")
 		e = Execution(nfs = fs, ip = ip, state = 1, url=currentURL)
 		e.save()
-		return render(request, 'status.html', {'type':'new', 'ip':ip, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw, 'rr':rr})
+		return render(request, 'status.html', {'type':'new', 'ip':ip, 'topo_p1':topo_p1, 'topo_p2':topo_p2, 'funcs':fs, 'url':url, 'idExec':e.id, 'rfw':rfw, 'rr':rr, 'rLb':rLb})
 	else:
 		exe_obj = list(ex)
-		return render(request, 'status.html', {'type':'old', 'ip':ip, 'funcs':fs, 'url':url, 'idExec':exe_obj[0].id, 'rfw':rfw, 'rr':rr})
+		return render(request, 'status.html', {'type':'old', 'ip':ip, 'topo_p1':topo_p1, 'topo_p2':topo_p2, 'funcs':fs, 'url':url, 'idExec':exe_obj[0].id, 'rfw':rfw, 'rr':rr, 'rLb':rLb})
 
 def setExecutionStateOff(request):
 	id = request.GET.get('idExec','0')

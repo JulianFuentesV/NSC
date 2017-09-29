@@ -15,6 +15,7 @@ $(document).ready(function(){
     //console.log("IP: "+ip);
 
     var statsInterval;
+    var hosts = $("#h").text();
     
     var activatedItems = $("#activatedItems").find(".itemSelected");
     //console.log("Activated elements:");
@@ -57,6 +58,15 @@ $(document).ready(function(){
             columns = "s"+Math.floor(12/totalItems);
             break;
     }
+
+    var topo_p1 = parseInt($("#topo_p1").text());
+    var topo_p2 = parseInt($("#topo_p2").text());
+    var s = 0; // total switchs
+    var h = 0; // total hosts
+    for(var n = 0; n < topo_p1; n++){
+        s += Math.pow(topo_p2,n);
+    }
+    h = Math.pow(topo_p2,topo_p1);
 
     $("#information").html("");
     showLoadingMask();
@@ -130,15 +140,24 @@ $(document).ready(function(){
                     break;
                 case 'loadBalancer':
                     //console.log("Load balancer encontrado");
-                    //hideLoadingMask();
+                    hideLoadingMask();
                     var listLb = '<ul id="listLb" class="collapsible popout" data-collapsible="accordion">'
                                 +'  <li id="itemLb">'
                                 +'    <div class="collapsible-header active"><i class="material-icons">swap_calls</i>Load Balancer</div>'
                                 +'    <div id="bodyLb" class="collapsible-body center-align"><span>'
                                 +'      <div class="input-field inline">'
+                                +'          <select id="hosts_lb" multiple>'
+                                +'              <option value="" disabled selected>Choose your hosts</option>';
+                    for(var e = 1; e <= h; e++){
+                        listLb +='              <option value="'+e+'">Host '+e+'</option>';
+                    }
+                        listLb +='           </select>'
+                                +'          <label>Servers</label>'
+                                +'      </div><br>'
+                                +'      <div class="input-field inline">'
                                 +'          <input id="virtualIP" type="text" class="validate">'
                                 +'          <label for="virtualIP" data-error="wrong" data-success="right">Virtual IP</label>'
-                                +'      </div>'
+                                +'      </div><br>'
                                 +'      <button id="btn_createlb" class="btn waves-effect waves-light" name="action" style="margin: 10px 0 10px 0;">Create Load Balancer'
                                 +'          <i class="material-icons left">launch</i>'
                                 +'      </button>'
@@ -149,6 +168,7 @@ $(document).ready(function(){
                                 +'  </li>'
                                 +'</ul>';
                     $("#information").append(listLb);
+                    $('select').material_select();
                     $("#listLb").addClass("col");
                     $("#listLb").addClass(columns);
                     $("#listLb").addClass("offset-"+offset);
@@ -277,13 +297,32 @@ $(document).ready(function(){
     });
 
     $("#information").on("click","#btn_createlb",function(){
-        //console.log("create lb");
         var virtualIP = $("#virtualIP").val();
-        //console.log(virtualIP);
+        var i = $("#hosts_lb").val();
+        var s ="";
+        i.forEach(function(iphost){
+            if(parseInt(iphost)<255){
+                if(parseInt(iphost)<10){
+                    s+='{"ip":"10.0.0.'+iphost+'/24", "mac":"00:00:00:00:00:0'+iphost+'"},';
+                }else{
+                    s+='{"ip":"10.0.0.'+iphost+'/24", "mac":"00:00:00:00:00:';
+                    if(parseInt(iphost)>15){
+                        s+=parseInt(iphost).toString(16)+'"},';
+                    }else{
+                        s+='0'+parseInt(iphost).toString(16)+'"},';
+                    }
+                }
+            }
+        });
+        s = s.slice(0, -1);
+        var dt = '{"virtual_ip": "'+virtualIP+'",'
+            +'"servers": ['+s+'],'
+            +'"rewrite_ip": 1}';
+        console.log(dt);
         $.ajax({
             url: "http://"+ip+":8080/v1.0/loadbalancer/create",
             type: "POST",
-            data: '{"virtual_ip":"'+virtualIP+'","rewrite_ip":1,"servers":[]}',
+            data: dt,
             beforeSend: function(xhr, settings) {
                 //xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
@@ -301,19 +340,38 @@ $(document).ready(function(){
     });
 
     $("#information").on("click","#btn_deletelb",function(){
-        //console.log("delete lb");
         var virtualIP = $("#virtualIP").val();
-        //console.log(virtualIP);
+        var i = $("#hosts_lb").val();
+        var s ="";
+        i.forEach(function(iphost){
+            if(parseInt(iphost)<255){
+                if(parseInt(iphost)<10){
+                    s+='{"ip":"10.0.0.'+iphost+'/24", "mac":"00:00:00:00:00:0'+iphost+'"},';
+                }else{
+                    s+='{"ip":"10.0.0.'+iphost+'/24", "mac":"00:00:00:00:00:';
+                    if(parseInt(iphost)>15){
+                        s+=parseInt(iphost).toString(16)+'"},';
+                    }else{
+                        s+='0'+parseInt(iphost).toString(16)+'"},';
+                    }
+                }
+            }
+        });
+        s = s.slice(0, -1);
+        var dt = '{"virtual_ip": "'+virtualIP+'",'
+            +'"servers": ['+s+'],'
+            +'"rewrite_ip": 1}';
+        console.log(dt);
         $.ajax({
             url: "http://"+ip+":8080/v1.0/loadbalancer/delete",
             type: "POST",
-            data: '{"virtual_ip":"'+virtualIP+'","rewrite_ip":1,"servers":[]}',
+            data: dt,
             beforeSend: function(xhr, settings) {
                 //xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
             success: function(result){
-                //console.log("SUCCESS");
-                //console.log(result);
+                console.log("SUCCESS");
+                console.log(result);
                 //Materialize.toast(msgSuccess, 3000);
             },
             error: function(result){
@@ -575,7 +633,11 @@ $(document).ready(function(){
     });
 
     $("#btn_stop").on("click", function(){
-        $("#msjLoadMask").text("Stopping...");
+        stopExecution("Stopping...");
+    });
+
+    function stopExecution(msg){
+        $("#msjLoadMask").text(msg);
         showLoadingMask();
         $.get("http://"+ip+":8081/stop", function(response){
             if(response == "stopped"){
@@ -593,8 +655,22 @@ $(document).ready(function(){
                 hideLoadingMask();
                 Materialize.toast("Error[1], try again.", 3000); //not stopped
             }
+        }).fail(function(){
+            console.log("fail stopping topology");
+            $.get("/ide/offExec?idExec="+idExec, function(response){
+                if(response == "off"){
+                    hideLoadingMask();
+                    window.location.replace('/ide/');
+                } else {
+                    hideLoadingMask();
+                    Materialize.toast("Error[2], try again.", 3000); //state dont changed in DB
+                }
+            }).fail(function(){
+                console.log("fail stopping local bd");
+                window.location.replace('/ide/');
+            });
         });
-    });
+    }
 
     var responseArray;
 
@@ -717,10 +793,50 @@ $(document).ready(function(){
                     });
                 });
             }
+            if(activatedIds.indexOf('loadBalancer') != -1){
+                var rLb = $("#rLb").text();
+                rLb = JSON.parse(rLb);
+                if(rLb[0].virtual_ip != "undefined" && rLb[0].servers != "undefined"){
+                    var i = rLb[0].servers.split(",");
+                    var s ="";
+                    i.forEach(function(iphost){
+                        if(parseInt(iphost)<255){
+                            if(parseInt(iphost)<10){
+                                s+='{"ip":"10.0.0.'+iphost+'/24", "mac":"00:00:00:00:00:0'+iphost+'"},';
+                            }else{
+                                s+='{"ip":"10.0.0.'+iphost+'/24", "mac":"00:00:00:00:00:';
+                                if(parseInt(iphost)>15){
+                                    s+=parseInt(iphost).toString(16)+'"},';
+                                }else{
+                                    s+='0'+parseInt(iphost).toString(16)+'"},';
+                                }
+                            }
+                        }
+                    });
+                    s = s.slice(0, -1);
+                    var dt = '{"virtual_ip": "'+rLb[0].virtual_ip+'",'
+                        +'"servers": ['+s+'],'
+                        +'"rewrite_ip": 1}';
+                    //console.log(dt);
+                    $.ajax({
+                        url: "http://"+ip+":8080/v1.0/loadbalancer/create",
+                        type: "POST",
+                        data: dt,
+                        beforeSend: function(xhr, settings) {
+                            //xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function(result){},
+                        error: function(result){}
+                    });
+                }else {
+                    console.log("without config");
+                }
+            }
             loadingView();
         } else {
             //TODO: Error page (controller off)
             console.log("controller off");
+            stopExecution("IP error or server offline. Stopping...");
         }
     }
 

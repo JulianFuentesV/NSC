@@ -93,11 +93,11 @@
         <!-- MODAL LOAD BALANCER CONFIG -->
         <div id="modal_loadBalancer_config" class="modal modal-fixed-footer">
             <div class="modal-content">
-            <h4>Load Balancer Configuration</h4>
-            <p>A bunch of text</p>
+                <h4>Load Balancer Configuration</h4>
+                <div id="rules_lb"></div>
             </div>
             <div class="modal-footer">
-            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
             </div>
         </div>
 
@@ -223,7 +223,7 @@
                     <tbody>
                         {% for r in run %}
                             <tr class="row">
-                                <td><p>{{ r.ip }}</p></td>
+                                <td><p class="coe_ip">{{ r.ip }}</p></td>
                                 <td style="max-width: 120px; word-wrap: break-word;"><p>{{ r.nfs }}</p></td>
                                 <td><a class="waves-effect waves-light" href="{{ r.url }}">Show</a></td>
                             </tr>

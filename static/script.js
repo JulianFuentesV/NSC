@@ -174,7 +174,14 @@ $(document).ready(function(){
         items = $("#board").find(".item");
         totalItems = 0;
         ids = [];
-        if (items[0]) {
+        coe_ips = $("#modal_execution").find(".coe_ip");
+        flag_coe = true;
+        for(var f=0; f<coe_ips.length; f++){
+            if(coe_ips[f].textContent == ip){
+                flag_coe = false;
+            }
+        }
+        if (items[0] && flag_coe) {
             while(items[totalItems]){
                 itemID = items[totalItems].id.split('_')[0];
                 console.log("item id: "+itemID);
@@ -205,9 +212,19 @@ $(document).ready(function(){
                 rR = rR.slice(0,-1);
             }
             rR += "]";
-            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2+'&rfw='+rFw+'&rr='+rR);
+            //Send rules LB
+            var LBvirtualIP = $("#virtual_ip_lb").val();
+            //var LBrewriteIP = $("#rewrite_lb").val();
+            var LBHosts = $("#hosts_lb").val();
+            var rLb = '[{"virtual_ip":"'+LBvirtualIP+'","servers":"'+LBHosts+'"}]';
+            window.location.replace('/ide/status/?ip='+ip+'&funcs='+ids+'&topop1='+tp1+'&topop2='+tp2+'&rfw='+rFw+'&rr='+rR+'&rLb='+rLb);
         } else {
-            Materialize.toast("Error: Board empty!", 3000);
+            if(!items[0]){
+                Materialize.toast("Error: Board empty!", 3000);
+            }
+            if(!flag_coe){
+                Materialize.toast("Error: Server in use!", 3000);
+            }
         }
     });
 
@@ -408,6 +425,34 @@ $(document).ready(function(){
         +'    <i class="material-icons right">send</i>'
         +'</button></div>';
         $("#newRulesR").append(addRulesRHTML);
+        $('select').material_select();
+
+        //Config Load Balancer Modal
+        $("#rules_lb").text("");
+        var rulesLoadBalancer = ''
+        +'<div class="input-field">'
+        +'    <input id="virtual_ip_lb" type="text" class="validate">'
+        +'    <label for="virtual_ip_lb" data-error="wrong" data-success="right">Virtual IP</label>'
+        +'</div><br>'
+        /*+'<div class="switch">'
+        +'  <label>'
+        +'Rewrite IP: Off'
+        +'    <input id="rewrite_lb" type="checkbox">'
+        +'    <span class="lever"></span>'
+        +'    On'
+        +'  </label>'
+        +'</div><br>'*/
+        +'<div class="input-field col s12">'
+        +'  <select id="hosts_lb" multiple>'
+        +'      <option value="" disabled selected>Choose your hosts</option>';
+        for(var e = 1; e <= h; e++){
+            rulesLoadBalancer+='<option value="'+e+'">Host '+e+'</option>';
+        }
+        rulesLoadBalancer+=
+        '   </select>'
+        +'  <label>Servers</label>'
+        +'</div>';
+        $("#rules_lb").append(rulesLoadBalancer);
         $('select').material_select();
     }
 
